@@ -1,15 +1,11 @@
-package main.java.pumba.messages;
+package main.java.pumba.messages.utils;
 
 import com.google.gson.Gson;
 
 public abstract class SocketMessage
 {
 	private String content;
-
-	public SocketMessage(String content)
-	{
-		this.content = content;
-	}
+	private Boolean approved;
 
 	public String getContent()
 	{
@@ -21,8 +17,18 @@ public abstract class SocketMessage
 		this.content = content;
 	}
 
-	public abstract void process(Object object);
-	
+	public Boolean getApproved()
+	{
+		return approved;
+	}
+
+	public void setApproved(Boolean approved)
+	{
+		this.approved = approved;
+	}
+
+	public abstract void processResponse(Object object);
+
 	@Override
 	public String toString()
 	{

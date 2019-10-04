@@ -15,10 +15,10 @@ import main.java.pumba.exceptions.ErrorCodes;
 import main.java.pumba.exceptions.ErrorMessages;
 import main.java.pumba.exceptions.PumbaException;
 import main.java.pumba.log.Log;
-import main.java.pumba.messages.SocketMessage;
-import main.java.pumba.messages.SocketMessageSerializer;
+import main.java.pumba.messages.utils.SocketMessage;
+import main.java.pumba.messages.utils.SocketMessageSerializer;
 
-public class LoginConnector extends Thread
+public class Connector extends Thread
 {
 
 	private Socket socket;
@@ -70,7 +70,7 @@ public class LoginConnector extends Thread
 		this.message = message;
 	}
 
-	public LoginConnector() throws PumbaException
+	public Connector() throws PumbaException
 	{
 		try
 		{
@@ -121,7 +121,7 @@ public class LoginConnector extends Thread
 				this.message = this.receiveMessage();
 
 				// Resuelvo el comando recibido
-				this.message.process(this);
+				this.message.processResponse(this);
 			}
 
 			catch (IOException | ClassNotFoundException e)

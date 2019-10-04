@@ -1,4 +1,4 @@
-package main.java.pumba.messages;
+package main.java.pumba.messages.utils;
 
 import java.lang.reflect.Type;
 
