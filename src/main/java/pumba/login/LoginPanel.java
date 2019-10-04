@@ -1,6 +1,7 @@
 package main.java.pumba.login;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -61,6 +62,8 @@ public class LoginPanel extends JPanel {
 				try
 				{
 					controller.registerUser(textFieldUser.getText(), textFieldPassword.getText());
+					lblError.setText("<html>"+ "Usuario creado exitosamente.<br>Por favor, haga login." +"</html>");
+					btnRegister.setSize(new Dimension());
 				}
 				catch (PumbaException pe)
 				{
