@@ -1,4 +1,4 @@
-package main.java.pumba.log;
+package pumba.log;
 
 public class Log
 {

@@ -4,12 +4,12 @@ import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 
-public class LoginMessage extends SocketMessage
+public class RegisterUserMessage extends SocketMessage
 {
 	private String username;
 	private String password;
 
-	public LoginMessage(String username, String password)
+	public RegisterUserMessage(String username, String password)
 	{
 		super();
 		this.username = username;

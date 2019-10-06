@@ -1,19 +1,29 @@
-package main.java.pumba.login;
+package pumba.login;
 
-import main.java.pumba.exceptions.PumbaException;
-import main.java.pumba.messages.LoginMessage;
-import main.java.pumba.messages.utils.SocketMessage;
+import pumba.connector.Connector;
+import pumba.exceptions.PumbaException;
+import pumba.messages.LoginMessage;
+import pumba.messages.RegisterUserMessage;
+import pumba.messages.utils.SocketMessage;
 
 public class LoginController
 {
 
-	public void registerUser(String username, String password) throws PumbaException
+	public void registerUser(Connector connector, String username, String password)
+			throws PumbaException
 	{
-		Connector loginConnector = new Connector();
+		SocketMessage message = new RegisterUserMessage(username, password);
+		connector.setMessage(message);
+		connector.run();
+	}
 
+	public void loginUser(Connector connector, String username, String password)
+			throws PumbaException
+
+	{
 		SocketMessage message = new LoginMessage(username, password);
-
-		loginConnector.setMessage(message);
-		loginConnector.run();
+		connector.setMessage(message);
+		connector.run();
+		
 	}
 }

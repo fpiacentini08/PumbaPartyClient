@@ -1,4 +1,4 @@
-package main.java.pumba.login;
+package pumba.connector;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,12 +11,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
-import main.java.pumba.exceptions.ErrorCodes;
-import main.java.pumba.exceptions.ErrorMessages;
-import main.java.pumba.exceptions.PumbaException;
-import main.java.pumba.log.Log;
-import main.java.pumba.messages.utils.SocketMessage;
-import main.java.pumba.messages.utils.SocketMessageSerializer;
+import pumba.exceptions.ErrorCodes;
+import pumba.exceptions.ErrorMessages;
+import pumba.exceptions.PumbaException;
+import pumba.log.Log;
+import pumba.messages.utils.SocketMessage;
+import pumba.messages.utils.SocketMessageSerializer;
 
 public class Connector extends Thread
 {
@@ -122,6 +122,7 @@ public class Connector extends Thread
 
 				// Resuelvo el comando recibido
 				this.message.processResponse(this);
+				// this.notifyAll();
 			}
 
 			catch (IOException | ClassNotFoundException e)
@@ -129,6 +130,9 @@ public class Connector extends Thread
 				JOptionPane.showMessageDialog(null, "Fallo la conexion con el servidor.");
 				System.exit(1);
 				e.printStackTrace();
+			}
+			catch(PumbaException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		}
 	}
@@ -139,6 +143,7 @@ public class Connector extends Thread
 		Log.debugLine();
 		Log.debug("INBOUND MESSAGE");
 		Log.debug(message.toString());
+		Log.debugLine();
 		return message;
 
 	}
@@ -148,6 +153,7 @@ public class Connector extends Thread
 		Log.debugLine();
 		Log.debug("OUTBOUND MESSAGE");
 		Log.debug(gson.toJson(message, SocketMessage.class));
+		Log.debugLine();
 		this.out.writeObject(gson.toJson(message, SocketMessage.class));
 	}
 

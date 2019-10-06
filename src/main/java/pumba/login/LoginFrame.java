@@ -1,16 +1,15 @@
-package main.java.pumba.login;
+package pumba.login;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-public class LoginFrame extends JFrame {
+import pumba.connector.Connector;
+import pumba.exceptions.PumbaException;
+
+public class LoginFrame extends JFrame
+{
 
 	/**
 	 * 
@@ -21,13 +20,19 @@ public class LoginFrame extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+	public static void main(String[] args)
+	{
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				try
+				{
 					LoginFrame frame = new LoginFrame();
 					frame.setVisible(true);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					e.printStackTrace();
 				}
 			}
@@ -36,13 +41,16 @@ public class LoginFrame extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws PumbaException 
 	 */
-	public LoginFrame() {
+	public LoginFrame() throws PumbaException
+	{
 		super("Pumba Party");
-		setResizable(false);		
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
-		contentPane = new LoginPanel();
+		Connector connector = new Connector();
+		contentPane = new LoginPanel(connector);
 		setBackground(Color.WHITE);
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);

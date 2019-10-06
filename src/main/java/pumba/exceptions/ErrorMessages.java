@@ -1,4 +1,4 @@
-package main.java.pumba.exceptions;
+package pumba.exceptions;
 
 public class ErrorMessages
 {

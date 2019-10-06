@@ -1,4 +1,4 @@
-package main.java.pumba.messages.utils;
+package pumba.messages.utils;
 
 import java.lang.reflect.Type;
 
@@ -29,7 +29,7 @@ public class SocketMessageSerializer implements JsonSerializer<SocketMessage>, J
 		JsonElement element = jsonObject.get("properties");
 
 		try {
-			return context.deserialize(element, Class.forName("main.java.pumba.messages."+ type));
+			return context.deserialize(element, Class.forName("pumba.messages."+ type));
 		} catch (ClassNotFoundException cnfe) {
 			throw new JsonParseException("Unknown element type: " + type, cnfe);
 		}
