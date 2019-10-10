@@ -17,6 +17,7 @@ public class ClientMain
 				try
 				{
 					LoginFrame frame = new LoginFrame();
+//					BoardFrame frame = new BoardFrame();
 					frame.setVisible(true);
 				}
 				catch (Exception e)
