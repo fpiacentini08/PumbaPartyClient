@@ -3,7 +3,7 @@ package pumba;
 import java.awt.EventQueue;
 
 import pumba.exceptions.PumbaException;
-import pumba.interfaces.login.LoginFrame;
+import pumba.interfaces.board.BoardFrame;
 
 public class ClientMain
 {
@@ -16,8 +16,8 @@ public class ClientMain
 			{
 				try
 				{
-					LoginFrame frame = new LoginFrame();
-//					BoardFrame frame = new BoardFrame();
+//					LoginFrame frame = new LoginFrame();
+					BoardFrame frame = new BoardFrame();
 					frame.setVisible(true);
 				}
 				catch (Exception e)

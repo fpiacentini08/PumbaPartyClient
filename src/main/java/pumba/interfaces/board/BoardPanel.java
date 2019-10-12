@@ -1,9 +1,15 @@
 package pumba.interfaces.board;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import pumba.connector.Connector;
+import pumba.exceptions.ErrorMessages;
 import pumba.exceptions.PumbaException;
+import pumba.interfaces.board.grid.GridPanel;
+import pumba.log.Log;
+import pumba.messages.GetBoardMessage;
 
 public class BoardPanel extends JPanel
 {
@@ -15,6 +21,7 @@ public class BoardPanel extends JPanel
 	{
 		getBoard(connector);
 		setLayout(null);
+		setVisible(true);
 
 	}
 
@@ -28,8 +35,23 @@ public class BoardPanel extends JPanel
 			}
 			catch (PumbaException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.debug(e.getStackTrace().toString());
+
+			}
+
+			if (connector.getMessage().getApproved())
+			{
+				GetBoardMessage message = (GetBoardMessage) connector.getMessage();
+				if (!message.getCells().isEmpty())
+				{
+					JPanel gridPanel = new GridPanel(message.getCells(), message.getDimension());
+					gridPanel.setVisible(true);
+					add(gridPanel);
+				}
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(new JFrame(), ErrorMessages.ERROR_GET_BOARD);
 			}
 
 		}

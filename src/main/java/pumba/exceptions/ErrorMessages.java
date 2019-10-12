@@ -11,5 +11,6 @@ public class ErrorMessages
 	public static final String ERROR_FIND_USER = "Error buscando al usuario.";
 	public static final String ERROR_CREATE_ROOM = "Error creando sala.";
 	public static final String ERROR_GETALL_ROOM = "Error buscando salas preexistentes.";
+	public static final String ERROR_GET_BOARD = "Error obteniendo tablero.";
 
 }

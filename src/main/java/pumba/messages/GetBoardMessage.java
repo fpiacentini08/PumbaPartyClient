@@ -26,9 +26,27 @@ public class GetBoardMessage extends SocketMessage
 		{
 			this.setErrorMessage(connector.getMessage().getErrorMessage());
 		}
-		System.out.println(cells);
-		System.out.println(dimension);
-
 	}
 
+	public List<CellReduced> getCells()
+	{
+		return cells;
+	}
+
+	public void setCells(List<CellReduced> cells)
+	{
+		this.cells = cells;
+	}
+
+	public Integer getDimension()
+	{
+		return dimension;
+	}
+
+	public void setDimension(Integer dimension)
+	{
+		this.dimension = dimension;
+	}
+
+	
 }

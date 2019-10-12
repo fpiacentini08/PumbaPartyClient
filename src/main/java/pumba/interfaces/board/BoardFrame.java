@@ -31,6 +31,9 @@ public class BoardFrame extends JFrame
 		setBackground(Color.WHITE);
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);
+//		setExtendedState(JFrame.MAXIMIZED_BOTH); 
+//		setUndecorated(true);
+
 	}
 
 }
