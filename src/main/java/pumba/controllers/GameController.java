@@ -2,6 +2,7 @@ package pumba.controllers;
 
 import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
+import pumba.messages.ApplyCellEffectMessage;
 import pumba.messages.GetPlayersMessage;
 import pumba.messages.GetPossiblePositionsMessage;
 import pumba.messages.MoveMessage;
@@ -56,6 +57,14 @@ public class GameController
 	public void move(Connector connector, PositionReduced positionReduced)
 	{
 		SocketMessage message = new MoveMessage(positionReduced);
+		connector.setMessage(message);
+		connector.run();
+		
+	}
+
+	public void applyCellEffect(Connector connector)
+	{
+		SocketMessage message = new ApplyCellEffectMessage();
 		connector.setMessage(message);
 		connector.run();
 		

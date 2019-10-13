@@ -1,3 +1,4 @@
+
 package pumba.interfaces.game;
 
 import java.awt.Color;
@@ -20,6 +21,7 @@ import pumba.interfaces.board.cells.PossiblePositionCell;
 import pumba.interfaces.board.grid.GridPanel;
 import pumba.interfaces.game.steps.ThrowDicePanel;
 import pumba.interfaces.players.PlayerPanel;
+import pumba.messages.ApplyCellEffectMessage;
 import pumba.messages.GetPlayersMessage;
 import pumba.messages.GetPossiblePositionsMessage;
 import pumba.messages.MoveMessage;
@@ -35,6 +37,8 @@ public class GamePanel extends JPanel
 	private static final long serialVersionUID = -6825966139733003662L;
 	private static final GameController gameController = new GameController();
 	private static final Integer PLAYERS_LAYER = 1;
+	private static final Integer DICE_LAYER = 2;
+	private static final Integer SCORES_LAYER = 3;
 	JLayeredPane layeredPane = new JLayeredPane();
 	JLayeredPane diceLayeredPane = new JLayeredPane();
 	JTextArea logger = new JTextArea();
@@ -95,7 +99,7 @@ public class GamePanel extends JPanel
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.CELL_EFFECT.ordinal()))
 		{
-
+			applyCellEffect(connector);
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.UPDATE_COINS.ordinal()))
 		{
@@ -112,6 +116,21 @@ public class GamePanel extends JPanel
 		else if (actualState.getActiveStep().equals(StepEnum.WAIT.ordinal()))
 		{
 
+		}
+	}
+
+	private void applyCellEffect(Connector connector)
+	{
+		synchronized (this)
+		{
+			gameController.applyCellEffect(connector);
+			if (connector.getMessage().getApproved())
+			{
+				ApplyCellEffectMessage message = (ApplyCellEffectMessage) connector.getMessage();
+				logger.setText(logger.getText() + message.getEffectDescription());
+				players = message.getPlayers();
+				drawScores();
+			}
 		}
 	}
 
@@ -164,9 +183,11 @@ public class GamePanel extends JPanel
 				MoveMessage message = (MoveMessage) connector.getMessage();
 				if (message.getDestination() != null)
 				{
+					layeredPane.remove(DICE_LAYER);
 					getPlayers(connector);
 					drawPlayers();
 					logger.setText(logger.getText() + "\n" + "Te has movido.\n");
+					nextStep(connector);
 				}
 				else
 				{
@@ -179,7 +200,7 @@ public class GamePanel extends JPanel
 
 	private void drawThrowDice(Connector connector)
 	{
-		layeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER);
+		layeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
 		diceLayeredPane.setBounds(582, 200, 30, 30);
 		ActionListener taskPerformer = new ActionListener()
 		{
@@ -202,7 +223,6 @@ public class GamePanel extends JPanel
 			{
 				try
 				{
-					diceLayeredPane.setVisible(false);
 					throwDice(connector);
 
 				}
@@ -224,7 +244,8 @@ public class GamePanel extends JPanel
 		JPanel throwDice = null;
 		JLayeredPane diceLayeredPane = new JLayeredPane();
 		diceLayeredPane.setBounds(582, 200, 30, 30);
-		layeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER);
+		layeredPane.remove(DICE_LAYER);
+		layeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
 		synchronized (this)
 		{
 			gameController.throwDice(connector);
@@ -269,6 +290,21 @@ public class GamePanel extends JPanel
 		}
 		playersLayeredPane.repaint();
 	}
+
+//	private void drawScores()
+//	{
+//		JLayeredPane scoresLayer = new JLayeredPane();
+//		scoresLayer.setSize(200, 100);
+//		scoresLayer.setVisible(true);
+//		JPanel scoresPanel = new ScoresPanel(players);
+//		scoresPanel.setSize(200, 100);
+//		scoresPanel.setLocation(582, 70);
+//		scoresPanel.setVisible(true);
+//		scoresPanel.setLayout(null);
+//		scoresLayer.add(scoresPanel, JLayeredPane.POPUP_LAYER);
+//		layeredPane.add(scoresLayer, JLayeredPane.POPUP_LAYER, SCORES_LAYER);
+//
+//	}
 
 	private void drawScores()
 	{
