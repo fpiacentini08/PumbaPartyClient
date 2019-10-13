@@ -1,19 +1,21 @@
 package pumba.messages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
-import pumba.models.rooms.Room;
-import pumba.models.users.User;
+import pumba.models.actions.ActionReduced;
 
-public class CreateRoomMessage extends SocketMessage
+public class GetActivePlayerActionsMessage extends SocketMessage
 {
-	private User user;
-	private Room room;
-
-	public CreateRoomMessage(User user)
+	List<ActionReduced> actions = new ArrayList<>();
+	
+	
+	public GetActivePlayerActionsMessage()
 	{
-		this.user = user;
+		super();
 	}
 
 	@Override
@@ -27,24 +29,14 @@ public class CreateRoomMessage extends SocketMessage
 		}
 	}
 
-	public User getUser()
+	public List<ActionReduced> getActions()
 	{
-		return user;
+		return actions;
 	}
 
-	public void setUser(User user)
+	public void setActions(List<ActionReduced> actions)
 	{
-		this.user = user;
-	}
-
-	public Room getRoom()
-	{
-		return room;
-	}
-
-	public void setRoom(Room room)
-	{
-		this.room = room;
+		this.actions = actions;
 	}
 
 }
