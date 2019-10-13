@@ -35,7 +35,7 @@ public abstract class SocketMessage
 	public String toString()
 	{
 		Gson gson = new Gson();
-		return gson.toJson(this, SocketMessage.class);
+		return gson.toJson(this, this.getClass());
 	}
 
 }

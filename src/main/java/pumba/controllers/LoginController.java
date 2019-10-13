@@ -1,4 +1,4 @@
-package pumba.interfaces.login;
+package pumba.controllers;
 
 import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;

@@ -1,4 +1,4 @@
-package pumba.interfaces.roomsmenu;
+package pumba.controllers;
 
 import pumba.connector.Connector;
 import pumba.messages.CreateRoomMessage;

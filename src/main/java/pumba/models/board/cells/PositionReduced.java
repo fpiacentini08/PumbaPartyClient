@@ -1,5 +1,9 @@
 package pumba.models.board.cells;
 
+import java.awt.Rectangle;
+
+import pumba.interfaces.board.grid.GridPanel;
+
 public class PositionReduced
 {
 	private Integer posX;
@@ -35,6 +39,12 @@ public class PositionReduced
 	public PositionReduced()
 	{
 		super();
+	}
+
+	public PositionReduced(Rectangle bounds)
+	{
+		this.posX = (int) (bounds.getX() / GridPanel.CELL_WIDTH);
+		this.posY = (int) (bounds.getY() / GridPanel.CELL_WIDTH);
 	}
 
 	@Override

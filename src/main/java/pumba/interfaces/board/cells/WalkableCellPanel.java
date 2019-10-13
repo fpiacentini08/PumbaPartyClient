@@ -43,15 +43,20 @@ public class WalkableCellPanel extends CellPanel
 
 	}
 
-	private void doDrawing(Graphics g)
+	protected void doDrawing(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g.create();
 		TexturePaint slateTp = new TexturePaint(texture, new Rectangle(0, 0, this.cellwidth, this.cellwidth));
 		g2d.setPaint(slateTp);
 		g2d.fillRect(0, 0, cellwidth, cellwidth);
-		g2d.setColor(Color.BLACK);
-		g2d.drawRect(0, 0, cellwidth, cellwidth);
+		drawRect(g2d);
 		g2d.dispose();
 
+	}
+
+	protected void drawRect(Graphics2D g2d)
+	{
+		g2d.setColor(Color.BLACK);
+		g2d.drawRect(0, 0, cellwidth, cellwidth);
 	}
 }

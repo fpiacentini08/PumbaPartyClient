@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import pumba.connector.Connector;
+import pumba.controllers.LoginController;
 import pumba.exceptions.PumbaException;
 import pumba.interfaces.roomsmenu.RoomsMenuFrame;
 import pumba.models.users.User;

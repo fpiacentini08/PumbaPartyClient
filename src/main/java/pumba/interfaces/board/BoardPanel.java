@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import pumba.connector.Connector;
+import pumba.controllers.BoardController;
 import pumba.exceptions.ErrorMessages;
 import pumba.exceptions.PumbaException;
 import pumba.interfaces.board.grid.GridPanel;
@@ -36,7 +37,6 @@ public class BoardPanel extends JPanel
 			catch (PumbaException e)
 			{
 				Log.debug(e.getStackTrace().toString());
-
 			}
 
 			if (connector.getMessage().getApproved())

@@ -11,7 +11,7 @@ import pumba.models.board.cells.CellReduced;
 public class GridPanel extends JPanel
 {
 
-	private static final Integer CELL_WIDTH = 48;
+	public static final Integer CELL_WIDTH = 48;
 	private static final long serialVersionUID = -6825966139733003662L;
 
 	public GridPanel(List<CellReduced> cells, Integer dimension)

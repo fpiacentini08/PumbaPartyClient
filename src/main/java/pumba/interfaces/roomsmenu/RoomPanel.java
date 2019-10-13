@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import pumba.connector.Connector;
+import pumba.controllers.RoomsMenuController;
 import pumba.models.rooms.Room;
 import pumba.models.users.User;
 

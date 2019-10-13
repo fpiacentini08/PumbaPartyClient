@@ -25,7 +25,7 @@ public class NonWalkableCellPanel extends CellPanel
 	{
 		try
 		{
-			return ImageIO.read(new File("src/resources/img/JungleTexture.jpg"));
+			return ImageIO.read(new File("src/resources/img/GrassTexture.jpg"));
 		}
 		catch (IOException e)
 		{

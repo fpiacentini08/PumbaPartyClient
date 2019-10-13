@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
 import pumba.connector.Connector;
+import pumba.controllers.RoomsMenuController;
 import pumba.exceptions.ErrorMessages;
 import pumba.messages.CreateRoomMessage;
 import pumba.messages.GetAllRoomsMessage;
