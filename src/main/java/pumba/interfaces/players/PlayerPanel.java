@@ -8,6 +8,8 @@ import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -18,22 +20,30 @@ public class PlayerPanel extends JPanel
 {
 
 	private static final long serialVersionUID = 2523539419055360451L;
-	protected static final BufferedImage image = loadImages();
+	protected BufferedImage image = null;
+	protected static final List<BufferedImage> imageList = loadImages();
 
-	public PlayerPanel(PlayerReduced player)
+	public PlayerPanel(PlayerReduced player, Integer playerNumber)
 	{
 		super();
 		setVisible(true);
 		setLayout(null);
 		setBackground(new Color(0, 0, 0, 0));
+		image = imageList.get(playerNumber);
 
 	}
 
-	protected static BufferedImage loadImages()
+	protected static List<BufferedImage> loadImages()
 	{
 		try
 		{
-			return ImageIO.read(new File("src/resources/img/SimbaFace.jpg"));
+			List<BufferedImage> list = new ArrayList<>();
+			list.add(ImageIO.read(new File("src/resources/img/SimbaFace.jpg")));
+			list.add(ImageIO.read(new File("src/resources/img/ZazuFace.jpg")));
+			list.add(ImageIO.read(new File("src/resources/img/TimonFace.jpg")));
+			list.add(ImageIO.read(new File("src/resources/img/PumbaFace.jpg")));
+			list.add(ImageIO.read(new File("src/resources/img/ScarFace.jpg")));
+			return list;
 		}
 		catch (IOException e)
 		{

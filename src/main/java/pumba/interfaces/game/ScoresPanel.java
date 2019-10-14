@@ -1,5 +1,6 @@
 package pumba.interfaces.game;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -16,6 +17,8 @@ public class ScoresPanel extends JPanel
 
 	public ScoresPanel(List<PlayerReduced> players)
 	{
+		Collections.sort(players, Collections.reverseOrder());
+
 		String[] columns = { "Jugador", "Bichos" };
 		String[][] data = { { "Jugador", "Bichos" }, { "", "" }, { "", "" }, { "", "" }, { "", "" }, { "", "" } };
 		for (int i = 1; i < players.size() + 1; i++)

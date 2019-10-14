@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -52,9 +53,10 @@ public class GamePanel extends JPanel
 {
 	private static final long serialVersionUID = -6825966139733003662L;
 	private static final GameController gameController = new GameController();
-	
+
 	public static final Integer delay = 1200;
-	
+	private static final Integer ACTION_BUTTON_HEIGHT = 40;
+
 	private static final Integer BOARD_LAYER = 1;
 	private static final Integer PLAYERS_LAYER = 2;
 	private static final Integer DICE_LAYER = 3;
@@ -62,14 +64,15 @@ public class GamePanel extends JPanel
 	private static final Integer TITTLE_LAYER = 5;
 	private static final Integer LOGGER_LAYER = 6;
 	private static final Integer ACTIONS_LAYER = 7;
+	private static final Integer FINISH_TURN_LAYER = 8;
 
-	
 	JLayeredPane mainLayeredPane = new JLayeredPane();
 	JLayeredPane diceLayeredPane = new JLayeredPane();
 	JLayeredPane scoresLayer = new JLayeredPane();
 	JLayeredPane loggerLayer = new JLayeredPane();
 	JLayeredPane playersLayeredPane = new JLayeredPane();
 	JLayeredPane actionsLayer = new JLayeredPane();
+	JLayeredPane finishTurnLayer = new JLayeredPane();
 
 	JTextPane logger = new JTextPane();
 	JLabel lblRound = new JLabel();
@@ -111,11 +114,14 @@ public class GamePanel extends JPanel
 	{
 		String text = logger.getText();
 		String[] lines = text.split("\n");
+		
+		Integer newMessageLines = message.split("\n").length - 2;
+		
 		StringBuilder scrolledText = new StringBuilder("");
 		int j = 0;
-		if (lines.length > 8)
+		if (lines.length + newMessageLines > 8)
 		{
-			j = 2;
+			j = 2 + newMessageLines;
 		}
 		for (int i = j; i < lines.length; i++)
 		{
@@ -197,20 +203,8 @@ public class GamePanel extends JPanel
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.WAIT.ordinal()))
 		{
-			writeLogger("------------");
 			mainLayeredPane.remove(actionsLayer);
-
-			ActionListener taskPerformer = new ActionListener()
-			{
-				public void actionPerformed(ActionEvent evt)
-				{
-					finishTurn(connector);
-				}
-			};
-
-			Timer timer = new Timer(delay, taskPerformer);
-			timer.setRepeats(false);
-			timer.start();
+			drawFinishTurnButton(connector);
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.ordinal()))
 		{
@@ -222,6 +216,28 @@ public class GamePanel extends JPanel
 			writeLogger("TERMINO EL JUEGO");
 			writeLogger("Gano " + this.players.get(0).getUsername());
 		}
+	}
+
+	private void drawFinishTurnButton(Connector connector)
+	{
+		finishTurnLayer.setBounds(0, 0, 800, 600);
+		finishTurnLayer.setVisible(true);
+		mainLayeredPane.add(finishTurnLayer, FINISH_TURN_LAYER);
+		int i = 0;
+		final JButton finishTurnButton = new JButton();
+		finishTurnButton.setBounds(582, 440 + ACTION_BUTTON_HEIGHT * i++, 200, ACTION_BUTTON_HEIGHT);
+		finishTurnButton.setText("Terminar turno");
+		finishTurnButton.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				finishTurn(connector);
+			}
+		});
+
+		finishTurnLayer.add(finishTurnButton);
+
 	}
 
 	private void playMinigame(Connector connector)
@@ -247,6 +263,9 @@ public class GamePanel extends JPanel
 
 	private void finishTurn(Connector connector)
 	{
+		finishTurnLayer.setVisible(false);
+		mainLayeredPane.remove(finishTurnLayer);
+
 		synchronized (this)
 		{
 			gameController.finishTurn(connector);
@@ -275,7 +294,6 @@ public class GamePanel extends JPanel
 
 	private void drawActions(Connector connector, List<ActionReduced> actions)
 	{
-		final Integer ACTION_BUTTON_HEIGHT = 40;
 		writeLogger("Hace click en una accion abajo.");
 		actionsLayer = new JLayeredPane();
 		actionsLayer.setBounds(0, 0, 800, 600);
@@ -408,7 +426,8 @@ public class GamePanel extends JPanel
 	private void drawThrowDice(Connector connector)
 	{
 		mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
-		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
+				ThrowDicePanel.DICE_SIZE);
 		ActionListener taskPerformer = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -451,7 +470,8 @@ public class GamePanel extends JPanel
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);
 		diceLayeredPane = new JLayeredPane();
-		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
+				ThrowDicePanel.DICE_SIZE);
 		mainLayeredPane.add(diceLayeredPane, DICE_LAYER);
 		synchronized (this)
 		{
@@ -477,15 +497,18 @@ public class GamePanel extends JPanel
 		playersLayeredPane = new JLayeredPane();
 		playersLayeredPane.setBounds(0, 0, 800, 600);
 		mainLayeredPane.add(playersLayeredPane, JLayeredPane.POPUP_LAYER, PLAYERS_LAYER);
+		JPanel playerPanel;
+		Integer playerNumber = 0;
 		for (PlayerReduced player : players)
 		{
-			JPanel playerPanel = new PlayerPanel(player);
+			playerPanel = new PlayerPanel(player, playerNumber++);
 			playerPanel.setBounds(GridPanel.CELL_WIDTH * player.getPosition().getPosX(),
 					GridPanel.CELL_WIDTH * player.getPosition().getPosY(), 30, 30);
 			playerPanel.setSize(30, 30);
 			playersLayeredPane.add(playerPanel, JLayeredPane.MODAL_LAYER);
 			JLabel lblNewLabel = new JLabel(player.getUsername());
 			lblNewLabel.setForeground(Color.YELLOW);
+			lblNewLabel.setFont(new Font("Verdana", Font.BOLD, 12));
 			lblNewLabel.setBounds(GridPanel.CELL_WIDTH * player.getPosition().getPosX(),
 					GridPanel.CELL_WIDTH * player.getPosition().getPosY() + 20, 100, 30);
 			playersLayeredPane.add(lblNewLabel, JLayeredPane.POPUP_LAYER);
@@ -500,7 +523,7 @@ public class GamePanel extends JPanel
 		scoresLayer = new JLayeredPane();
 		scoresLayer.setBounds(0, 0, 800, 600);
 		scoresLayer.setVisible(true);
-		JPanel scoresPanel = new ScoresPanel(players);
+		JPanel scoresPanel = new ScoresPanel(new ArrayList<>(players));
 		scoresPanel.setSize(200, 100);
 		scoresPanel.setLocation(582, 70);
 		scoresPanel.setVisible(true);
