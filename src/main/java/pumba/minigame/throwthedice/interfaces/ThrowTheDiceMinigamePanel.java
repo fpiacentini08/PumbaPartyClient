@@ -185,7 +185,6 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		}
 		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.WAIT.ordinal()))
 		{
-			writeLogger("------------");
 			ActionListener taskPerformer = new ActionListener()
 			{
 				public void actionPerformed(ActionEvent evt)

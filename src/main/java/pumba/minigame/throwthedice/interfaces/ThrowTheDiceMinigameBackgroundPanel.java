@@ -40,7 +40,6 @@ public class ThrowTheDiceMinigameBackgroundPanel extends JPanel
 		super();
 		setVisible(true);
 		setLayout(null);
-
 	}
 
 	@Override

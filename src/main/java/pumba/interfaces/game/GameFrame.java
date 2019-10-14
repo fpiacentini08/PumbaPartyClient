@@ -35,6 +35,7 @@ public class GameFrame extends JFrame
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);
 
+
 	}
 
 }
