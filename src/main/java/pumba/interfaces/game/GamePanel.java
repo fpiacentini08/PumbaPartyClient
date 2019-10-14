@@ -10,15 +10,19 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import org.apache.commons.lang3.StringUtils;
 
 import pumba.connector.Connector;
 import pumba.controllers.GameController;
@@ -35,6 +39,7 @@ import pumba.messages.MoveMessage;
 import pumba.messages.NextStepMessage;
 import pumba.messages.PlayActionMessage;
 import pumba.messages.ThrowDiceMessage;
+import pumba.minigame.MinigameSelector;
 import pumba.models.actions.ActionReduced;
 import pumba.models.board.cells.PositionReduced;
 import pumba.models.game.StateReduced;
@@ -108,7 +113,10 @@ public class GamePanel extends JPanel
 		}
 		for (int i = j; i < lines.length; i++)
 		{
-			scrolledText.append(lines[i] + "\n");
+			if (!StringUtils.isBlank(lines[i]))
+			{
+				scrolledText.append(lines[i] + "\n");
+			}
 		}
 
 		logger.setText(null);
@@ -183,16 +191,23 @@ public class GamePanel extends JPanel
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.ordinal()))
 		{
-
-			System.out.println("Ahora hay que jugar al minijuego!!!");
+			playMinigame(connector);
 			finishRound(connector);
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.END.ordinal()))
 		{
-
 			writeLogger("TERMINO EL JUEGO");
 			writeLogger("Gano " + this.players.get(0).getUsername());
 		}
+	}
+
+	private void playMinigame(Connector connector)
+	{
+		JPanel minigamePanel = MinigameSelector.randomMinigame(connector, players);
+		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+		minigamePanel.setVisible(true);
+		frame.setContentPane(minigamePanel);
+		frame.revalidate();
 	}
 
 	private void finishRound(Connector connector)

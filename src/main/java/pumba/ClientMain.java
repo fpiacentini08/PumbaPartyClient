@@ -18,7 +18,6 @@ public class ClientMain
 				{
 					// LoginFrame frame = new LoginFrame();
 					GameFrame frame = new GameFrame();
-//					BoardFrame frame = new BoardFrame();
 					frame.setVisible(true);
 				}
 				catch (Exception e)
