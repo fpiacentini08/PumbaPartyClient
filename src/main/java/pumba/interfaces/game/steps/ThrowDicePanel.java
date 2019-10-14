@@ -20,6 +20,10 @@ public class ThrowDicePanel extends JPanel
 
 	protected static final BufferedImage dice = loadImages();
 
+	public static final Integer DICE_SIZE = 50;
+	public static final Integer DICE_POS_X = 650;
+	public static final Integer DICE_POS_Y = 180;
+	
 	private static Integer DICE_WIDTH = 360 / 6;
 	protected static Integer diceNumber;
 
@@ -73,11 +77,11 @@ public class ThrowDicePanel extends JPanel
 	private void doDrawing(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g.create();
-		TexturePaint slateTp = new TexturePaint(getDice(dice), new Rectangle(0, 0, 30, 30));
+		TexturePaint slateTp = new TexturePaint(getDice(dice), new Rectangle(0, 0, DICE_SIZE, DICE_SIZE));
 		g2d.setPaint(slateTp);
-		g2d.fillRect(0, 0, 30, 30);
+		g2d.fillRect(0, 0, DICE_SIZE, DICE_SIZE);
 		g2d.setColor(Color.BLACK);
-		g2d.drawRect(0, 0, 30, 30);
+		g2d.drawRect(0, 0, DICE_SIZE, DICE_SIZE);
 		g2d.dispose();
 
 	}

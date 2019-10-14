@@ -3,6 +3,7 @@ package pumba.interfaces.game;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -22,6 +23,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import pumba.connector.Connector;
@@ -50,6 +52,9 @@ public class GamePanel extends JPanel
 {
 	private static final long serialVersionUID = -6825966139733003662L;
 	private static final GameController gameController = new GameController();
+	
+	public static final Integer delay = 1200;
+	
 	private static final Integer BOARD_LAYER = 1;
 	private static final Integer PLAYERS_LAYER = 2;
 	private static final Integer DICE_LAYER = 3;
@@ -58,6 +63,7 @@ public class GamePanel extends JPanel
 	private static final Integer LOGGER_LAYER = 6;
 	private static final Integer ACTIONS_LAYER = 7;
 
+	
 	JLayeredPane mainLayeredPane = new JLayeredPane();
 	JLayeredPane diceLayeredPane = new JLayeredPane();
 	JLayeredPane scoresLayer = new JLayeredPane();
@@ -66,7 +72,7 @@ public class GamePanel extends JPanel
 	JLayeredPane actionsLayer = new JLayeredPane();
 
 	JTextPane logger = new JTextPane();
-
+	JLabel lblRound = new JLabel();
 	List<PlayerReduced> players;
 
 	private StateReduced actualState;
@@ -160,9 +166,15 @@ public class GamePanel extends JPanel
 			{
 				NextStepMessage message = (NextStepMessage) connector.getMessage();
 				actualState = message.getActualState();
+				updateRound(actualState.getActiveRound());
 				processNextStep(connector);
 			}
 		}
+	}
+
+	private void updateRound(Integer activeRound)
+	{
+		lblRound.setText(RegExUtils.replacePattern(lblRound.getText(), "[0-9]", activeRound.toString()));
 	}
 
 	private void processNextStep(Connector connector)
@@ -187,7 +199,18 @@ public class GamePanel extends JPanel
 		{
 			writeLogger("------------");
 			mainLayeredPane.remove(actionsLayer);
-			finishTurn(connector);
+
+			ActionListener taskPerformer = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					finishTurn(connector);
+				}
+			};
+
+			Timer timer = new Timer(delay, taskPerformer);
+			timer.setRepeats(false);
+			timer.start();
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.ordinal()))
 		{
@@ -227,6 +250,8 @@ public class GamePanel extends JPanel
 		synchronized (this)
 		{
 			gameController.finishTurn(connector);
+			logger.setText(null);
+			mainLayeredPane.remove(actionsLayer);
 			if (connector.getMessage().getApproved())
 			{
 				nextStep(connector);
@@ -267,11 +292,8 @@ public class GamePanel extends JPanel
 				public void mouseClicked(MouseEvent e)
 				{
 					executeAction(connector, action.getActionDescription());
-					actionButton.setEnabled(false);
-					actionButton.removeMouseListener(this);
-
+					mainLayeredPane.remove(actionsLayer);
 				}
-
 			});
 
 			if (!action.getAvailable())
@@ -386,13 +408,13 @@ public class GamePanel extends JPanel
 	private void drawThrowDice(Connector connector)
 	{
 		mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
-		diceLayeredPane.setBounds(582, 200, 30, 30);
+		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
 		ActionListener taskPerformer = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				JPanel throwDice = new ThrowDicePanel();
-				throwDice.setSize(30, 30);
+				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
 				throwDice.setVisible(true);
 				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
 			}
@@ -429,8 +451,8 @@ public class GamePanel extends JPanel
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);
 		diceLayeredPane = new JLayeredPane();
-		diceLayeredPane.setBounds(582, 200, 30, 30);
-		mainLayeredPane.add(diceLayeredPane, JLayeredPane.DEFAULT_LAYER, DICE_LAYER);
+		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+		mainLayeredPane.add(diceLayeredPane, DICE_LAYER);
 		synchronized (this)
 		{
 			gameController.throwDice(connector);
@@ -438,7 +460,7 @@ public class GamePanel extends JPanel
 			{
 				ThrowDiceMessage message = (ThrowDiceMessage) connector.getMessage();
 				throwDice = new ThrowDicePanel(message.getDiceResult());
-				throwDice.setSize(30, 30);
+				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
 				throwDice.setVisible(true);
 				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
 				writeLogger("Salio un " + message.getDiceResult() + ".");
@@ -513,6 +535,12 @@ public class GamePanel extends JPanel
 		title.setVisible(true);
 		title.setSize(200, 50);
 		titleLayer.add(title, JLayeredPane.POPUP_LAYER);
+
+		lblRound = new JLabel("Ronda: 0");
+		lblRound.setBounds(420, 5, 200, 20);
+		lblRound.setFont(new Font("Courier", Font.BOLD, 18));
+		lblRound.setBackground(Color.BLACK);
+		titleLayer.add(lblRound, JLayeredPane.POPUP_LAYER);
 
 	}
 

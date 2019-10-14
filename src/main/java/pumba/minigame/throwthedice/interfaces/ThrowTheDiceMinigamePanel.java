@@ -39,6 +39,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 {
 	private static final long serialVersionUID = -6825966139733003662L;
 	private static final ThrowTheDiceController minigameController = new ThrowTheDiceController();
+
 	private static final Integer BACKGROUND_LAYER = 2;
 	private static final Integer DICE_LAYER = 3;
 	private static final Integer SCORES_LAYER = 4;
@@ -185,7 +186,18 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.WAIT.ordinal()))
 		{
 			writeLogger("------------");
-			finishTurn(connector);
+			ActionListener taskPerformer = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					finishTurn(connector);
+
+				}
+			};
+
+			Timer timer = new Timer(GamePanel.delay, taskPerformer);
+			timer.setRepeats(false);
+			timer.start();
 		}
 		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.END.ordinal()))
 		{
@@ -209,6 +221,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		synchronized (this)
 		{
 			minigameController.finishTurn(connector);
+			logger.setText(null);
 			if (connector.getMessage().getApproved())
 			{
 				nextStep(connector);
@@ -219,13 +232,14 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 	private void drawThrowDice(Connector connector)
 	{
 		mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
-		diceLayeredPane.setBounds(582, 200, 30, 30);
+		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
+				ThrowDicePanel.DICE_SIZE);
 		ActionListener taskPerformer = new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				JPanel throwDice = new ThrowDicePanel();
-				throwDice.setSize(30, 30);
+				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
 				throwDice.setVisible(true);
 				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
 			}
@@ -262,7 +276,8 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);
 		diceLayeredPane = new JLayeredPane();
-		diceLayeredPane.setBounds(582, 200, 30, 30);
+		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
+				ThrowDicePanel.DICE_SIZE);
 		mainLayeredPane.add(diceLayeredPane, JLayeredPane.DEFAULT_LAYER, DICE_LAYER);
 		synchronized (this)
 		{
@@ -272,7 +287,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 				ThrowTheDiceMinigameThrowDiceMessage message = (ThrowTheDiceMinigameThrowDiceMessage) connector
 						.getMessage();
 				throwDice = new ThrowDicePanel(message.getResult().getDiceResult());
-				throwDice.setSize(30, 30);
+				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
 				throwDice.setVisible(true);
 				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
 				writeLogger(message.getResult().getDescription());
