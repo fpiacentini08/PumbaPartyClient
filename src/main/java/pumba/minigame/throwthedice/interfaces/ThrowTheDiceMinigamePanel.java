@@ -58,7 +58,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private ThrowTheDiceMinigameStateReduced actualState;
 
-	public ThrowTheDiceMinigamePanel(Connector connector, List<String> playersNames)
+	public ThrowTheDiceMinigamePanel(Connector connector, List<String> playersNames) throws PumbaException
 	{
 		mainLayeredPane.setVisible(true);
 		mainLayeredPane.setSize(800, 600);
@@ -162,7 +162,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	}
 
-	private void nextStep(Connector connector)
+	private void nextStep(Connector connector) throws PumbaException
 	{
 		synchronized (this)
 		{
@@ -177,7 +177,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		}
 	}
 
-	private void processNextStep(Connector connector)
+	private void processNextStep(Connector connector) throws PumbaException
 	{
 		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.THROW_DICE.ordinal()))
 		{
@@ -189,7 +189,15 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 			{
 				public void actionPerformed(ActionEvent evt)
 				{
-					finishTurn(connector);
+					try
+					{
+						finishTurn(connector);
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 				}
 			};
@@ -206,7 +214,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		}
 	}
 
-	private void endGame(Connector connector)
+	private void endGame(Connector connector) throws PumbaException
 	{
 		JPanel gamePanel = new GamePanel(connector);
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -215,7 +223,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		frame.revalidate();
 	}
 
-	private void finishTurn(Connector connector)
+	private void finishTurn(Connector connector) throws PumbaException
 	{
 		synchronized (this)
 		{
@@ -258,7 +266,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 					throwDice(connector);
 
 				}
-				catch (InterruptedException e1)
+				catch (InterruptedException | PumbaException e1)
 				{
 					e1.printStackTrace();
 				}
@@ -270,7 +278,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		writeLogger("Hace click en el dado para tirar.");
 	}
 
-	private void throwDice(Connector connector) throws InterruptedException
+	private void throwDice(Connector connector) throws InterruptedException, PumbaException
 	{
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);

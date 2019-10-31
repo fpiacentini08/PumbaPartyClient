@@ -16,7 +16,7 @@ public class ClientMain
 			{
 				try
 				{
-					String username = "simb@";
+					String username = args[0];
 					// LoginFrame frame = new LoginFrame();
 					GameFrame frame = new GameFrame(username);
 					frame.setVisible(true);

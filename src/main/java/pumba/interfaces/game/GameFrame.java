@@ -26,7 +26,7 @@ public class GameFrame extends JFrame
 	 */
 	public GameFrame(String username) throws PumbaException
 	{
-		super("Pumba Party");
+		super("Pumba Party " + username );
 		SocketMessage.setClientId(username);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
