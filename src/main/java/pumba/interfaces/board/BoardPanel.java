@@ -4,13 +4,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import pumba.connector.Connector;
 import pumba.controllers.BoardController;
 import pumba.exceptions.ErrorMessages;
 import pumba.exceptions.PumbaException;
 import pumba.interfaces.board.grid.GridPanel;
 import pumba.log.Log;
 import pumba.messages.GetBoardMessage;
+import pumba.sockets.Connector;
 
 public class BoardPanel extends JPanel
 {

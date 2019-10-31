@@ -39,10 +39,10 @@ public class PlayerPanel extends JPanel
 		{
 			List<BufferedImage> list = new ArrayList<>();
 			list.add(ImageIO.read(new File("src/resources/img/SimbaFace.jpg")));
-			list.add(ImageIO.read(new File("src/resources/img/ZazuFace.jpg")));
 			list.add(ImageIO.read(new File("src/resources/img/TimonFace.jpg")));
 			list.add(ImageIO.read(new File("src/resources/img/PumbaFace.jpg")));
 			list.add(ImageIO.read(new File("src/resources/img/ScarFace.jpg")));
+			list.add(ImageIO.read(new File("src/resources/img/ZazuFace.jpg")));
 			return list;
 		}
 		catch (IOException e)

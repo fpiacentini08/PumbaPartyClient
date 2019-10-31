@@ -12,13 +12,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
-import pumba.connector.Connector;
 import pumba.controllers.RoomsMenuController;
 import pumba.exceptions.ErrorMessages;
 import pumba.messages.CreateRoomMessage;
 import pumba.messages.GetAllRoomsMessage;
 import pumba.models.rooms.Room;
 import pumba.models.users.User;
+import pumba.sockets.Connector;
 
 public class RoomsMenuPanel extends JPanel
 {

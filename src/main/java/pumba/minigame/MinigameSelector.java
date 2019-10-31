@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
 
-import pumba.connector.Connector;
 import pumba.minigame.throwthedice.interfaces.ThrowTheDiceMinigamePanel;
 import pumba.models.players.PlayerReduced;
+import pumba.sockets.Connector;
 
 public class MinigameSelector
 {

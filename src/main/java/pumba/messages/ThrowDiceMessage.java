@@ -1,16 +1,19 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class ThrowDiceMessage extends SocketMessage
 {
 	private Integer diceResult;
+	private String clientId;
 
 	public ThrowDiceMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
+
 	}
 
 	@Override

@@ -27,7 +27,6 @@ import javax.swing.text.StyledDocument;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import pumba.connector.Connector;
 import pumba.controllers.GameController;
 import pumba.interfaces.board.BoardPanel;
 import pumba.interfaces.board.cells.PossiblePositionCell;
@@ -42,12 +41,14 @@ import pumba.messages.MoveMessage;
 import pumba.messages.NextStepMessage;
 import pumba.messages.PlayActionMessage;
 import pumba.messages.ThrowDiceMessage;
+import pumba.messages.utils.SocketMessage;
 import pumba.minigame.MinigameSelector;
 import pumba.models.actions.ActionReduced;
 import pumba.models.board.cells.PositionReduced;
 import pumba.models.game.StateReduced;
 import pumba.models.game.StepEnum;
 import pumba.models.players.PlayerReduced;
+import pumba.sockets.Connector;
 
 public class GamePanel extends JPanel
 {
@@ -78,7 +79,7 @@ public class GamePanel extends JPanel
 	JLabel lblRound = new JLabel();
 	List<PlayerReduced> players;
 
-	private StateReduced actualState;
+	private static StateReduced actualState;
 
 	public GamePanel(Connector connector)
 	{
@@ -98,6 +99,15 @@ public class GamePanel extends JPanel
 
 	}
 
+	private Boolean itIsMyTurn()
+	{
+		if (actualState != null && actualState.getActivePlayer() != null)
+		{
+			return actualState.getActivePlayer().getUsername().equals(SocketMessage.getClientId());
+		}
+		return true;
+	}
+
 	private void drawLogger()
 	{
 		loggerLayer.setBounds(0, 0, 800, 600);
@@ -114,9 +124,9 @@ public class GamePanel extends JPanel
 	{
 		String text = logger.getText();
 		String[] lines = text.split("\n");
-		
+
 		Integer newMessageLines = message.split("\n").length - 2;
-		
+
 		StringBuilder scrolledText = new StringBuilder("");
 		int j = 0;
 		if (lines.length + newMessageLines > 8)
@@ -379,17 +389,19 @@ public class GamePanel extends JPanel
 					possiblePositionCell.setBounds(pos.getPosX() * GridPanel.CELL_WIDTH,
 							pos.getPosY() * GridPanel.CELL_WIDTH, GridPanel.CELL_WIDTH, GridPanel.CELL_WIDTH);
 					possiblePositionCell.setVisible(true);
-					possiblePositionCell.addMouseListener(new MouseAdapter()
+					if (itIsMyTurn())
 					{
-						@Override
-						public void mouseClicked(MouseEvent e)
+						possiblePositionCell.addMouseListener(new MouseAdapter()
 						{
-							move(connector, new PositionReduced(possiblePositionCell.getBounds()));
-							possiblePositionsLayer.setVisible(false);
-						}
+							@Override
+							public void mouseClicked(MouseEvent e)
+							{
+								move(connector, new PositionReduced(possiblePositionCell.getBounds()));
+								possiblePositionsLayer.setVisible(false);
+							}
 
-					});
-
+						});
+					}
 					possiblePositionsLayer.add(possiblePositionCell);
 				}
 
@@ -441,25 +453,27 @@ public class GamePanel extends JPanel
 		Timer timer = new Timer(1000 / 30, taskPerformer);
 		timer.setRepeats(true);
 		timer.start();
-
-		diceLayeredPane.addMouseListener(new MouseAdapter()
+		if (itIsMyTurn())
 		{
-			@Override
-			public void mouseClicked(MouseEvent e)
+			diceLayeredPane.addMouseListener(new MouseAdapter()
 			{
-				try
+				@Override
+				public void mouseClicked(MouseEvent e)
 				{
-					timer.stop();
-					throwDice(connector);
+					try
+					{
+						timer.stop();
+						throwDice(connector);
 
+					}
+					catch (InterruptedException e1)
+					{
+						e1.printStackTrace();
+					}
 				}
-				catch (InterruptedException e1)
-				{
-					e1.printStackTrace();
-				}
-			}
 
-		});
+			});
+		}
 
 		writeLogger("Es el turno de " + actualState.getActivePlayer().getUsername());
 		writeLogger("Hace click en el dado para tirar.");

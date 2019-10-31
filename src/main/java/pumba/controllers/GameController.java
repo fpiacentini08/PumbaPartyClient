@@ -1,6 +1,5 @@
 package pumba.controllers;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.ApplyCellEffectMessage;
 import pumba.messages.FinishRoundMessage;
@@ -15,10 +14,12 @@ import pumba.messages.StartTestGameMessage;
 import pumba.messages.ThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.PositionReduced;
+import pumba.sockets.Connector;
 
 public class GameController
 {
 
+	
 	public void startTestGame(Connector connector)
 			throws PumbaException
 	{

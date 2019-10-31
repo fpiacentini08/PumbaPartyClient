@@ -2,17 +2,20 @@ package pumba.messages;
 
 import java.util.Map;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class ThrowTheDiceMinigameGetPlayers extends SocketMessage
 {
 	private Map<String, Integer> players;
 
+	private String clientId;
+
 	public ThrowTheDiceMinigameGetPlayers()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

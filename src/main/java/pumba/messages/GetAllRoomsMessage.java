@@ -2,18 +2,20 @@ package pumba.messages;
 
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.rooms.Room;
+import pumba.sockets.Connector;
 
 public class GetAllRoomsMessage extends SocketMessage
 {
 	private List<Room> rooms;
+	private String clientId;
 
 	public GetAllRoomsMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

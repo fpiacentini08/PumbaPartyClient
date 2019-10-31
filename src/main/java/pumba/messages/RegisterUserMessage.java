@@ -1,19 +1,21 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class RegisterUserMessage extends SocketMessage
 {
 	private String username;
 	private String password;
+	private String clientId;
 
 	public RegisterUserMessage(String username, String password)
 	{
 		super();
 		this.username = username;
 		this.password = password;
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

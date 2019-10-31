@@ -4,9 +4,10 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
-import pumba.connector.Connector;
 import pumba.controllers.GameController;
 import pumba.exceptions.PumbaException;
+import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class GameFrame extends JFrame
 {
@@ -20,11 +21,13 @@ public class GameFrame extends JFrame
 
 	/**
 	 * Create the frame.
-	 * @throws PumbaException 
+	 * 
+	 * @throws PumbaException
 	 */
-	public GameFrame() throws PumbaException
+	public GameFrame(String username) throws PumbaException
 	{
 		super("Pumba Party");
+		SocketMessage.setClientId(username);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
@@ -34,7 +37,6 @@ public class GameFrame extends JFrame
 		setBackground(Color.WHITE);
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);
-
 
 	}
 

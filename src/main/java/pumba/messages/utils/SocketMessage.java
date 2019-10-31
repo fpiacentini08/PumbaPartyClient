@@ -6,8 +6,15 @@ import pumba.exceptions.PumbaException;
 
 public abstract class SocketMessage
 {
+	private static String clientId = "NOT_STARTED";
+	
 	private String errorMessage;
 	private Boolean approved;
+
+	public SocketMessage()
+	{
+		super();
+	}
 
 	public String getErrorMessage()
 	{
@@ -27,6 +34,16 @@ public abstract class SocketMessage
 	public void setApproved(Boolean approved)
 	{
 		this.approved = approved;
+	}
+
+	public static String getClientId()
+	{
+		return clientId;
+	}
+
+	public static void setClientId(String clientId)
+	{
+		SocketMessage.clientId = clientId;
 	}
 
 	public abstract void processResponse(Object object) throws PumbaException;

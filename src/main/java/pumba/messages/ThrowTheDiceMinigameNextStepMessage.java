@@ -1,17 +1,20 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.minigame.throwthedice.models.ThrowTheDiceMinigameStateReduced;
+import pumba.sockets.Connector;
 
 public class ThrowTheDiceMinigameNextStepMessage extends SocketMessage
 {
 	private ThrowTheDiceMinigameStateReduced actualState;
 
+	private String clientId;
+
 	public ThrowTheDiceMinigameNextStepMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

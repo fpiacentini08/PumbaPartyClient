@@ -1,14 +1,19 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class ThrowTheDiceMinigameFinishTurnMessage extends SocketMessage
 {
+	
+	
+	private String clientId;
+
 	public ThrowTheDiceMinigameFinishTurnMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

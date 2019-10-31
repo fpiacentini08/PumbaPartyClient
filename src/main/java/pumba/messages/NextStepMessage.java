@@ -1,17 +1,19 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.game.StateReduced;
+import pumba.sockets.Connector;
 
 public class NextStepMessage extends SocketMessage
 {
 	private StateReduced actualState;
+	private String clientId;
 
 	public NextStepMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

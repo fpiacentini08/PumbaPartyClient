@@ -2,7 +2,6 @@ package pumba.minigame.throwthedice.controllers;
 
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.ThrowTheDiceMinigameFinishTurnMessage;
 import pumba.messages.ThrowTheDiceMinigameGetPlayers;
@@ -10,6 +9,7 @@ import pumba.messages.ThrowTheDiceMinigameNextStepMessage;
 import pumba.messages.ThrowTheDiceMinigameStart;
 import pumba.messages.ThrowTheDiceMinigameThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class ThrowTheDiceController
 {

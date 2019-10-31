@@ -1,10 +1,10 @@
 package pumba.controllers;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.LoginMessage;
 import pumba.messages.RegisterUserMessage;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class LoginController
 {

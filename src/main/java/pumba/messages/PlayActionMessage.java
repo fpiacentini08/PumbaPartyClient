@@ -3,16 +3,17 @@ package pumba.messages;
 import java.util.ArrayList;
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.players.PlayerReduced;
+import pumba.sockets.Connector;
 
 public class PlayActionMessage extends SocketMessage
 {
 	String actionDescription;
 	String resultDescription;
 	List<PlayerReduced> players = new ArrayList<>();
+	private String clientId;
 
 	public String getActionDescription()
 	{
@@ -28,6 +29,8 @@ public class PlayActionMessage extends SocketMessage
 	{
 		super();
 		this.actionDescription = actionDescription;
+		this.clientId = SocketMessage.getClientId();
+
 	}
 
 	public List<PlayerReduced> getPlayers()

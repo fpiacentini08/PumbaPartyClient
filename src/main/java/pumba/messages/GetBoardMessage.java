@@ -2,19 +2,21 @@ package pumba.messages;
 
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.CellReduced;
+import pumba.sockets.Connector;
 
 public class GetBoardMessage extends SocketMessage
 {
 	private List<CellReduced> cells;
 	private Integer dimension;
+	private String clientId;
 
 	public GetBoardMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

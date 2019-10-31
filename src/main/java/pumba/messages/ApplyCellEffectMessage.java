@@ -3,19 +3,21 @@ package pumba.messages;
 import java.util.ArrayList;
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.players.PlayerReduced;
+import pumba.sockets.Connector;
 
 public class ApplyCellEffectMessage extends SocketMessage
 {
 	String effectDescription;
 	List<PlayerReduced> players = new ArrayList<>();
+	private String clientId;
 
 	public ApplyCellEffectMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

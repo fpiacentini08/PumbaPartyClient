@@ -1,14 +1,18 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
+import pumba.sockets.Connector;
 
 public class StartTestGameMessage extends SocketMessage
 {
+
+	private String clientId;
+	
 	public StartTestGameMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override
@@ -22,5 +26,4 @@ public class StartTestGameMessage extends SocketMessage
 		}
 	}
 
-	
 }

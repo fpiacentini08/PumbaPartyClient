@@ -23,7 +23,6 @@ import javax.swing.text.StyledDocument;
 
 import org.apache.commons.lang3.StringUtils;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.interfaces.game.GamePanel;
 import pumba.interfaces.game.steps.ThrowDicePanel;
@@ -34,6 +33,7 @@ import pumba.messages.ThrowTheDiceMinigameThrowDiceMessage;
 import pumba.minigame.throwthedice.controllers.ThrowTheDiceController;
 import pumba.minigame.throwthedice.models.ThrowTheDiceMinigameStateEnum;
 import pumba.minigame.throwthedice.models.ThrowTheDiceMinigameStateReduced;
+import pumba.sockets.Connector;
 
 public class ThrowTheDiceMinigamePanel extends JPanel
 {

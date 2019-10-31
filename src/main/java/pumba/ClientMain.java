@@ -16,8 +16,9 @@ public class ClientMain
 			{
 				try
 				{
+					String username = "simb@";
 					// LoginFrame frame = new LoginFrame();
-					GameFrame frame = new GameFrame();
+					GameFrame frame = new GameFrame(username);
 					frame.setVisible(true);
 				}
 				catch (Exception e)

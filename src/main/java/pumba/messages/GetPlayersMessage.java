@@ -2,18 +2,20 @@ package pumba.messages;
 
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.players.PlayerReduced;
+import pumba.sockets.Connector;
 
 public class GetPlayersMessage extends SocketMessage
 {
 	private List<PlayerReduced> players;
+	private String clientId;
 
 	public GetPlayersMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override

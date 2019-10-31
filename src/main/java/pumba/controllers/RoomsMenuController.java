@@ -1,10 +1,10 @@
 package pumba.controllers;
 
-import pumba.connector.Connector;
 import pumba.messages.CreateRoomMessage;
 import pumba.messages.GetAllRoomsMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.users.User;
+import pumba.sockets.Connector;
 
 public class RoomsMenuController
 {

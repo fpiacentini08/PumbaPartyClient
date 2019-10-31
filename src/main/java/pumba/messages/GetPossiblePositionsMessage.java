@@ -3,18 +3,20 @@ package pumba.messages;
 import java.util.ArrayList;
 import java.util.List;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.PositionReduced;
+import pumba.sockets.Connector;
 
 public class GetPossiblePositionsMessage extends SocketMessage
 {
 	List<PositionReduced> possiblePositions = new ArrayList<>();
+	private String clientId;
 
 	public GetPossiblePositionsMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	@Override
