@@ -15,7 +15,6 @@ import pumba.messages.ThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.PositionReduced;
 import pumba.sockets.Connector;
-import pumba.sockets.Listener;
 
 public class GameController
 {
@@ -31,20 +30,11 @@ public class GameController
 	{
 		SocketMessage message = new GetPlayersMessage();
 		connector.setMessage(message);
-		if (itIsMyTurn)
-		{
-			connector.run();
-		}
-		else
-		{
-			Listener listener = new Listener();
-			listener.setMessage(message);
-			listener.run();
-		}
+		connector.run();
 
 	}
 
-	public void nextStep(Connector connector, Boolean itIsMyTurn)
+	public void nextStep(Connector connector, Boolean itIsMyTurn) throws PumbaException
 	{
 		SocketMessage message = new NextStepMessage();
 		connector.setMessage(message);
@@ -52,7 +42,7 @@ public class GameController
 
 	}
 
-	public void throwDice(Connector connector, Boolean itIsMyTurn)
+	public void throwDice(Connector connector, Boolean itIsMyTurn) throws PumbaException
 	{
 		SocketMessage message = new ThrowDiceMessage();
 		connector.setMessage(message);

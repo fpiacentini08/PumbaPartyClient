@@ -87,13 +87,58 @@ public class GamePanel extends JPanel
 		mainLayeredPane.setVisible(true);
 		mainLayeredPane.setSize(800, 600);
 		add(mainLayeredPane);
-		drawBoard(connector);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				drawBoard(connector);
+			}
+		});
+
 		drawTitle();
+
 		getPlayers(connector);
-		drawPlayers();
-		drawScores();
-		drawLogger();
-		nextStep(connector);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				drawPlayers();
+			}
+		});
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+
+				drawScores();
+			}
+		});
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				drawLogger();
+			}
+		});
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					nextStep(connector);
+				}
+				catch (PumbaException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
 		setSize(800, 600);
 		setLayout(null);
 		setVisible(true);
@@ -198,34 +243,102 @@ public class GamePanel extends JPanel
 	{
 		if (actualState.getActiveStep().equals(StepEnum.THROW_DICE.ordinal()))
 		{
-			drawThrowDice(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					drawThrowDice(connector);
+				}
+			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.GET_POSSIBLE_POSITIONS.ordinal()))
 		{
-			getPossiblePositions(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+
+					getPossiblePositions(connector);
+				}
+			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.CELL_EFFECT.ordinal()))
 		{
-			applyCellEffect(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+
+					try
+					{
+						applyCellEffect(connector);
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.SELECT_ACTION.ordinal()))
 		{
-			getActivePlayerActions(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					getActivePlayerActions(connector);
+				}
+			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.WAIT.ordinal()))
 		{
-			mainLayeredPane.remove(actionsLayer);
-			drawFinishTurnButton(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					mainLayeredPane.remove(actionsLayer);
+					drawFinishTurnButton(connector);
+				}
+			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.ordinal()))
 		{
-			playMinigame(connector);
-			finishRound(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						playMinigame(connector);
+						finishRound(connector);
+
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.END.ordinal()))
 		{
-			writeLogger("TERMINO EL JUEGO");
-			writeLogger("Gano " + this.players.get(0).getUsername());
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					writeLogger("TERMINO EL JUEGO");
+					writeLogger("Gano " + players.get(0).getUsername());
+				}
+			});
 		}
 	}
 
@@ -497,6 +610,34 @@ public class GamePanel extends JPanel
 				}
 
 			});
+		}
+		else
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+
+				@Override
+				public void run()
+				{
+					try
+					{
+						throwDice(connector);
+					}
+					catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+
+			});
+
 		}
 
 		writeLogger("Es el turno de " + actualState.getActivePlayer().getUsername());
