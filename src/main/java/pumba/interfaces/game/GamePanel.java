@@ -345,31 +345,46 @@ public class GamePanel extends JPanel
 
 	private void drawFinishTurnButton(Connector connector, Listener listener)
 	{
-		finishTurnLayer.setBounds(0, 0, 800, 600);
-		finishTurnLayer.setVisible(true);
-		mainLayeredPane.add(finishTurnLayer, FINISH_TURN_LAYER);
-		int i = 0;
-		final JButton finishTurnButton = new JButton();
-		finishTurnButton.setBounds(582, 440 + ACTION_BUTTON_HEIGHT * i++, 200, ACTION_BUTTON_HEIGHT);
-		finishTurnButton.setText("Terminar turno");
-		finishTurnButton.addMouseListener(new MouseAdapter()
+		if (itIsMyTurn())
 		{
-			@Override
-			public void mouseClicked(MouseEvent e)
+			finishTurnLayer.setBounds(0, 0, 800, 600);
+			finishTurnLayer.setVisible(true);
+			mainLayeredPane.add(finishTurnLayer, FINISH_TURN_LAYER);
+			int i = 0;
+			final JButton finishTurnButton = new JButton();
+			finishTurnButton.setBounds(582, 440 + ACTION_BUTTON_HEIGHT * i++, 200, ACTION_BUTTON_HEIGHT);
+			finishTurnButton.setText("Terminar turno");
+			finishTurnButton.addMouseListener(new MouseAdapter()
 			{
-				try
+				@Override
+				public void mouseClicked(MouseEvent e)
 				{
-					finishTurn(connector, listener);
+					try
+					{
+						finishTurn(connector, listener);
+					}
+					catch (PumbaException e1)
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
-				catch (PumbaException e1)
-				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
+			});
 
-		finishTurnLayer.add(finishTurnButton);
+			finishTurnLayer.add(finishTurnButton);
+		}
+		else
+		{
+			try
+			{
+				finishTurn(connector, listener);
+			}
+			catch (PumbaException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 
 	}
 
@@ -401,10 +416,20 @@ public class GamePanel extends JPanel
 
 		synchronized (this)
 		{
-			gameController.finishTurn(connector);
+			SocketMessage message;
+			if (itIsMyTurn())
+			{
+				gameController.finishTurn(connector);
+				message = (SocketMessage) connector.getMessage();
+			}
+			else
+			{
+				gameController.finishTurn(listener);
+				message = (SocketMessage) listener.getMessage();
+			}
 			logger.setText(null);
 			mainLayeredPane.remove(actionsLayer);
-			if (connector.getMessage().getApproved())
+			if (message.getApproved())
 			{
 				nextStep(connector, listener);
 			}
@@ -415,10 +440,21 @@ public class GamePanel extends JPanel
 	{
 		synchronized (this)
 		{
-			gameController.getActivePlayerActions(connector);
+			GetActivePlayerActionsMessage message;
+
+			if (itIsMyTurn())
+			{
+				gameController.getActivePlayerActions(connector);
+				message = (GetActivePlayerActionsMessage) connector.getMessage();
+			}
+			else
+			{
+				gameController.getActivePlayerActions(listener);
+				message = (GetActivePlayerActionsMessage) listener.getMessage();
+
+			}
 			if (connector.getMessage().getApproved())
 			{
-				GetActivePlayerActionsMessage message = (GetActivePlayerActionsMessage) connector.getMessage();
 				drawActions(connector, listener, message.getActions());
 			}
 		}
@@ -437,23 +473,26 @@ public class GamePanel extends JPanel
 			final JButton actionButton = new JButton();
 			actionButton.setBounds(582, 440 + ACTION_BUTTON_HEIGHT * i++, 200, ACTION_BUTTON_HEIGHT);
 			actionButton.setText(action.getActionDescription());
-			actionButton.addMouseListener(new MouseAdapter()
+			if (itIsMyTurn())
 			{
-				@Override
-				public void mouseClicked(MouseEvent e)
+				actionButton.addMouseListener(new MouseAdapter()
 				{
-					try
+					@Override
+					public void mouseClicked(MouseEvent e)
 					{
-						executeAction(connector, listener, action.getActionDescription());
+						try
+						{
+							executeAction(connector, listener, action.getActionDescription());
+						}
+						catch (PumbaException e1)
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						mainLayeredPane.remove(actionsLayer);
 					}
-					catch (PumbaException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					mainLayeredPane.remove(actionsLayer);
-				}
-			});
+				});
+			}
 
 			if (!action.getAvailable())
 			{
@@ -466,16 +505,40 @@ public class GamePanel extends JPanel
 			}
 			actionsLayer.add(actionButton);
 		}
+		if (!itIsMyTurn())
+		{
+			try
+			{
+				executeAction(connector, listener, null);
+			}
+			catch (PumbaException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			mainLayeredPane.remove(actionsLayer);
+		}
+
 	}
 
 	private void executeAction(Connector connector, Listener listener, String actionDescription) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.playAction(connector, actionDescription);
-			if (connector.getMessage().getApproved())
+			PlayActionMessage message;
+
+			if (itIsMyTurn())
 			{
-				PlayActionMessage message = (PlayActionMessage) connector.getMessage();
+				gameController.playAction(connector, actionDescription);
+				message = (PlayActionMessage) connector.getMessage();
+			}
+			else
+			{
+				gameController.playAction(listener, actionDescription);
+				message = (PlayActionMessage) listener.getMessage();
+			}
+			if (message.getApproved())
+			{
 				writeLogger("Has decidido " + message.getActionDescription().toLowerCase());
 				writeLogger(message.getResultDescription());
 				players = message.getPlayers();
@@ -489,10 +552,20 @@ public class GamePanel extends JPanel
 	{
 		synchronized (this)
 		{
-			gameController.applyCellEffect(connector);
-			if (connector.getMessage().getApproved())
+			ApplyCellEffectMessage message;
+
+			if (itIsMyTurn())
 			{
-				ApplyCellEffectMessage message = (ApplyCellEffectMessage) connector.getMessage();
+				gameController.applyCellEffect(connector);
+				message = (ApplyCellEffectMessage) connector.getMessage();
+			}
+			else
+			{
+				gameController.applyCellEffect(listener);
+				message = (ApplyCellEffectMessage) listener.getMessage();
+			}
+			if (message.getApproved())
+			{
 				writeLogger(message.getEffectDescription());
 				players = message.getPlayers();
 				drawScores();

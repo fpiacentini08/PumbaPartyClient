@@ -121,4 +121,34 @@ public class GameController
 		listener.run();
 		
 	}
+
+	public void playAction(Listener listener, String actionDescription)
+	{
+		SocketMessage message = new PlayActionMessage();
+		listener.setMessage(message);
+		listener.run();
+		
+	}
+
+	public void finishTurn(Listener listener)
+	{
+		SocketMessage message = new FinishTurnMessage();
+		listener.setMessage(message);
+		listener.run();
+		
+	}
+
+	public void applyCellEffect(Listener listener)
+	{
+		SocketMessage message = new ApplyCellEffectMessage();
+		listener.setMessage(message);
+		listener.run();
+	}
+
+	public void getActivePlayerActions(Listener listener)
+	{
+		SocketMessage message = new GetActivePlayerActionsMessage();
+		listener.setMessage(message);
+		listener.run();
+	}
 }

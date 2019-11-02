@@ -58,7 +58,6 @@
 //		Integer imageIndex = 0;
 //		while (true)
 //		{
-//			System.out.println("Da vueltas sin parar");
 //			if (System.currentTimeMillis() > tick)
 //			{
 //				this.removeAll();

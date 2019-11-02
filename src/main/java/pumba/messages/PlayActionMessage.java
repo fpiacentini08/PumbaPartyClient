@@ -28,7 +28,6 @@ public class PlayActionMessage extends SocketMessage
 		super();
 		this.actionDescription = actionDescription;
 		this.clientId = SocketMessage.getClientId();
-
 	}
 
 	public List<PlayerReduced> getPlayers()
@@ -44,6 +43,7 @@ public class PlayActionMessage extends SocketMessage
 	public PlayActionMessage()
 	{
 		super();
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	public String getResultDescription()
