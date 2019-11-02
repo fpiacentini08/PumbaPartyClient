@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import pumba.exceptions.PumbaException;
 import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class BoardFrame extends JFrame
 {
@@ -20,14 +21,13 @@ public class BoardFrame extends JFrame
 	 * Create the frame.
 	 * @throws PumbaException 
 	 */
-	public BoardFrame() throws PumbaException
+	public BoardFrame(Connector connector, Listener listener) throws PumbaException
 	{
 		super("Pumba Party");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
-		Connector connector = new Connector();
-		contentPane = new BoardPanel(connector);
+		contentPane = new BoardPanel(connector, listener);
 		setBackground(Color.WHITE);
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);

@@ -3,10 +3,8 @@ package pumba.messages;
 import java.util.ArrayList;
 import java.util.List;
 
-import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.players.PlayerReduced;
-import pumba.sockets.Connector;
 
 public class PlayActionMessage extends SocketMessage
 {
@@ -56,17 +54,6 @@ public class PlayActionMessage extends SocketMessage
 	public void setResultDescription(String resultDescription)
 	{
 		this.resultDescription = resultDescription;
-	}
-
-	@Override
-	public void processResponse(Object object) throws PumbaException
-	{
-		Connector connector = (Connector) object;
-
-		if (!connector.getMessage().getApproved())
-		{
-			this.setErrorMessage(connector.getMessage().getErrorMessage());
-		}
 	}
 
 }

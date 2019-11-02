@@ -6,7 +6,7 @@ public class StateReduced
 {
 	private Integer activeTurn;
 	private PlayerReduced activePlayer;
-	private Integer activeStep;
+	private String activeStep;
 	private Integer activeRound;
 
 	public StateReduced()
@@ -34,12 +34,12 @@ public class StateReduced
 		this.activePlayer = activePlayer;
 	}
 
-	public Integer getActiveStep()
+	public String getActiveStep()
 	{
 		return activeStep;
 	}
 
-	public void setActiveStep(Integer activeStep)
+	public void setActiveStep(String activeStep)
 	{
 		this.activeStep = activeStep;
 	}

@@ -216,7 +216,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private void endGame(Connector connector) throws PumbaException
 	{
-		JPanel gamePanel = new GamePanel(connector);
+		JPanel gamePanel = new GamePanel(connector, null);
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 		gamePanel.setVisible(true);
 		frame.setContentPane(gamePanel);

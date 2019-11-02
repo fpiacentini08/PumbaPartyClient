@@ -8,6 +8,7 @@ import pumba.controllers.GameController;
 import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class GameFrame extends JFrame
 {
@@ -21,19 +22,19 @@ public class GameFrame extends JFrame
 
 	/**
 	 * Create the frame.
+	 * @param listener 
 	 * 
 	 * @throws PumbaException
 	 */
-	public GameFrame(String username) throws PumbaException
+	public GameFrame(String username, Connector connector, Listener listener) throws PumbaException
 	{
 		super("Pumba Party " + username );
 		SocketMessage.setClientId(username);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
-		Connector connector = new Connector();
 		gameController.startTestGame(connector);
-		contentPane = new GamePanel(connector);
+		contentPane = new GamePanel(connector, listener);
 		setBackground(Color.WHITE);
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);

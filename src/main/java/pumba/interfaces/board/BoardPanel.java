@@ -11,6 +11,7 @@ import pumba.interfaces.board.grid.GridPanel;
 import pumba.log.Log;
 import pumba.messages.GetBoardMessage;
 import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class BoardPanel extends JPanel
 {
@@ -18,15 +19,15 @@ public class BoardPanel extends JPanel
 	private static final long serialVersionUID = -6825966139733003662L;
 	private static BoardController controller = new BoardController();
 
-	public BoardPanel(Connector connector)
+	public BoardPanel(Connector connector, Listener listener)
 	{
-		getBoard(connector);
+		getBoard(connector, listener);
 		setLayout(null);
 		setVisible(true);
 
 	}
 
-	private void getBoard(Connector connector)
+	private void getBoard(Connector connector, Listener listener)
 	{
 		synchronized (this)
 		{

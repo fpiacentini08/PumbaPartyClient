@@ -2,10 +2,8 @@ package pumba.messages;
 
 import java.util.List;
 
-import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.rooms.Room;
-import pumba.sockets.Connector;
 
 public class GetAllRoomsMessage extends SocketMessage
 {
@@ -16,22 +14,6 @@ public class GetAllRoomsMessage extends SocketMessage
 	{
 		super();
 		this.clientId = SocketMessage.getClientId();
-	}
-
-	@Override
-	public void processResponse(Object object) throws PumbaException
-	{
-		Connector connector = (Connector) object;
-
-		if (!connector.getMessage().getApproved())
-		{
-			this.setErrorMessage(connector.getMessage().getErrorMessage());
-		}
-		else
-		{
-			System.out.println(this.rooms);
-		}
-
 	}
 
 	public List<Room> getRooms()

@@ -15,6 +15,7 @@ import pumba.messages.ThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.PositionReduced;
 import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class GameController
 {
@@ -26,7 +27,7 @@ public class GameController
 		connector.run();
 	}
 
-	public void getPlayers(Connector connector, Boolean itIsMyTurn) throws PumbaException
+	public void getPlayers(Connector connector) throws PumbaException
 	{
 		SocketMessage message = new GetPlayersMessage();
 		connector.setMessage(message);
@@ -34,7 +35,7 @@ public class GameController
 
 	}
 
-	public void nextStep(Connector connector, Boolean itIsMyTurn) throws PumbaException
+	public void nextStep(Connector connector) throws PumbaException
 	{
 		SocketMessage message = new NextStepMessage();
 		connector.setMessage(message);
@@ -42,14 +43,14 @@ public class GameController
 
 	}
 
-	public void throwDice(Connector connector, Boolean itIsMyTurn) throws PumbaException
+	public void throwDice(Connector connector) throws PumbaException
 	{
 		SocketMessage message = new ThrowDiceMessage();
 		connector.setMessage(message);
 		connector.run();
 	}
 
-	public void getPossiblePositions(Connector connector, Boolean itIsMyTurn)
+	public void getPossiblePositions(Connector connector)
 	{
 		SocketMessage message = new GetPossiblePositionsMessage();
 		connector.setMessage(message);
@@ -57,7 +58,7 @@ public class GameController
 
 	}
 
-	public void move(Connector connector, PositionReduced positionReduced, Boolean itIsMyTurn)
+	public void move(Connector connector, PositionReduced positionReduced)
 	{
 		SocketMessage message = new MoveMessage(positionReduced);
 		connector.setMessage(message);
@@ -65,7 +66,7 @@ public class GameController
 
 	}
 
-	public void applyCellEffect(Connector connector, Boolean itIsMyTurn)
+	public void applyCellEffect(Connector connector)
 	{
 		SocketMessage message = new ApplyCellEffectMessage();
 		connector.setMessage(message);
@@ -73,7 +74,7 @@ public class GameController
 
 	}
 
-	public void getActivePlayerActions(Connector connector, Boolean itIsMyTurn)
+	public void getActivePlayerActions(Connector connector)
 	{
 		SocketMessage message = new GetActivePlayerActionsMessage();
 		connector.setMessage(message);
@@ -81,7 +82,7 @@ public class GameController
 
 	}
 
-	public void playAction(Connector connector, String actionDescription, Boolean itIsMyTurn)
+	public void playAction(Connector connector, String actionDescription)
 	{
 		SocketMessage message = new PlayActionMessage(actionDescription);
 		connector.setMessage(message);
@@ -89,7 +90,7 @@ public class GameController
 
 	}
 
-	public void finishTurn(Connector connector, Boolean itIsMyTurn)
+	public void finishTurn(Connector connector)
 	{
 		SocketMessage message = new FinishTurnMessage();
 		connector.setMessage(message);
@@ -97,11 +98,27 @@ public class GameController
 
 	}
 
-	public void finishRound(Connector connector, Boolean itIsMyTurn)
+	public void finishRound(Connector connector)
 	{
 		SocketMessage message = new FinishRoundMessage();
 		connector.setMessage(message);
 		connector.run();
 
+	}
+
+	public void throwDice(Listener listener)
+	{
+		SocketMessage message = new FinishRoundMessage();
+		listener.setMessage(message);
+		listener.run();
+		
+	}
+
+	public void move(Listener listener, PositionReduced positionReduced)
+	{
+		SocketMessage message = new MoveMessage(positionReduced);
+		listener.setMessage(message);
+		listener.run();
+		
 	}
 }

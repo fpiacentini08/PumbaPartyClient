@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 
 import pumba.exceptions.PumbaException;
 import pumba.interfaces.game.GameFrame;
+import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class ClientMain
 {
@@ -18,7 +20,9 @@ public class ClientMain
 				{
 					String username = args[0];
 					// LoginFrame frame = new LoginFrame();
-					GameFrame frame = new GameFrame(username);
+					Connector connector = new Connector();
+					Listener listener = new Listener(connector);
+					GameFrame frame = new GameFrame(username, connector, listener);
 					frame.setVisible(true);
 				}
 				catch (Exception e)

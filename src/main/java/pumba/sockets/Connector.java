@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import com.google.gson.JsonSyntaxException;
+
 import pumba.exceptions.PumbaException;
 
 public class Connector extends PumbaSocket
@@ -25,16 +27,14 @@ public class Connector extends PumbaSocket
 				this.message.processResponse(this);
 			}
 
-			catch (IOException | ClassNotFoundException e)
+			catch (IOException | PumbaException | JsonSyntaxException | ClassNotFoundException e)
 			{
 				JOptionPane.showMessageDialog(null, "Fallo la conexion con el servidor.");
-				System.exit(1);
 				e.printStackTrace();
+				System.exit(1);
+				
 			}
-			catch (PumbaException e)
-			{
-				JOptionPane.showMessageDialog(null, e.getMessage());
-			}
+
 		}
 	}
 

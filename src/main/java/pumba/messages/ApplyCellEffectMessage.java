@@ -3,10 +3,8 @@ package pumba.messages;
 import java.util.ArrayList;
 import java.util.List;
 
-import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.players.PlayerReduced;
-import pumba.sockets.Connector;
 
 public class ApplyCellEffectMessage extends SocketMessage
 {
@@ -18,17 +16,6 @@ public class ApplyCellEffectMessage extends SocketMessage
 	{
 		super();
 		this.clientId = SocketMessage.getClientId();
-	}
-
-	@Override
-	public void processResponse(Object object) throws PumbaException
-	{
-		Connector connector = (Connector) object;
-
-		if (!connector.getMessage().getApproved())
-		{
-			this.setErrorMessage(connector.getMessage().getErrorMessage());
-		}
 	}
 
 	public String getEffectDescription()

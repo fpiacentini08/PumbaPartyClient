@@ -50,6 +50,7 @@ import pumba.models.game.StateReduced;
 import pumba.models.game.StepEnum;
 import pumba.models.players.PlayerReduced;
 import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class GamePanel extends JPanel
 {
@@ -75,6 +76,7 @@ public class GamePanel extends JPanel
 	JLayeredPane playersLayeredPane = new JLayeredPane();
 	JLayeredPane actionsLayer = new JLayeredPane();
 	JLayeredPane finishTurnLayer = new JLayeredPane();
+	JLayeredPane possiblePositionsLayer = new JLayeredPane();
 
 	JTextPane logger = new JTextPane();
 	JLabel lblRound = new JLabel();
@@ -82,7 +84,7 @@ public class GamePanel extends JPanel
 
 	private static StateReduced actualState;
 
-	public GamePanel(Connector connector) throws PumbaException
+	public GamePanel(Connector connector, Listener listener) throws PumbaException
 	{
 		mainLayeredPane.setVisible(true);
 		mainLayeredPane.setSize(800, 600);
@@ -92,13 +94,13 @@ public class GamePanel extends JPanel
 			@Override
 			public void run()
 			{
-				drawBoard(connector);
+				drawBoard(connector, listener);
 			}
 		});
 
 		drawTitle();
 
-		getPlayers(connector);
+		getPlayers(connector, listener);
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -131,7 +133,7 @@ public class GamePanel extends JPanel
 			{
 				try
 				{
-					nextStep(connector);
+					nextStep(connector, listener);
 				}
 				catch (PumbaException e)
 				{
@@ -219,17 +221,17 @@ public class GamePanel extends JPanel
 
 	}
 
-	private void nextStep(Connector connector) throws PumbaException
+	private void nextStep(Connector connector, Listener listener) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.nextStep(connector, itIsMyTurn());
+			gameController.nextStep(connector);
 			if (connector.getMessage().getApproved())
 			{
 				NextStepMessage message = (NextStepMessage) connector.getMessage();
 				actualState = message.getActualState();
 				updateRound(actualState.getActiveRound());
-				processNextStep(connector);
+				processNextStep(connector, listener);
 			}
 		}
 	}
@@ -239,32 +241,31 @@ public class GamePanel extends JPanel
 		lblRound.setText(RegExUtils.replacePattern(lblRound.getText(), "[0-9]", activeRound.toString()));
 	}
 
-	private void processNextStep(Connector connector) throws PumbaException
+	private void processNextStep(Connector connector, Listener listener) throws PumbaException
 	{
-		if (actualState.getActiveStep().equals(StepEnum.THROW_DICE.ordinal()))
+		if (actualState.getActiveStep().equals(StepEnum.THROW_DICE.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					drawThrowDice(connector);
+					drawThrowDice(connector, listener);
 				}
 			});
 		}
-		else if (actualState.getActiveStep().equals(StepEnum.GET_POSSIBLE_POSITIONS.ordinal()))
+		else if (actualState.getActiveStep().equals(StepEnum.GET_POSSIBLE_POSITIONS.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-
-					getPossiblePositions(connector);
+					getPossiblePositions(connector, listener);
 				}
 			});
 		}
-		else if (actualState.getActiveStep().equals(StepEnum.CELL_EFFECT.ordinal()))
+		else if (actualState.getActiveStep().equals(StepEnum.CELL_EFFECT.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -274,7 +275,7 @@ public class GamePanel extends JPanel
 
 					try
 					{
-						applyCellEffect(connector);
+						applyCellEffect(connector, listener);
 					}
 					catch (PumbaException e)
 					{
@@ -284,18 +285,18 @@ public class GamePanel extends JPanel
 				}
 			});
 		}
-		else if (actualState.getActiveStep().equals(StepEnum.SELECT_ACTION.ordinal()))
+		else if (actualState.getActiveStep().equals(StepEnum.SELECT_ACTION.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					getActivePlayerActions(connector);
+					getActivePlayerActions(connector, listener);
 				}
 			});
 		}
-		else if (actualState.getActiveStep().equals(StepEnum.WAIT.ordinal()))
+		else if (actualState.getActiveStep().equals(StepEnum.WAIT.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -303,11 +304,11 @@ public class GamePanel extends JPanel
 				public void run()
 				{
 					mainLayeredPane.remove(actionsLayer);
-					drawFinishTurnButton(connector);
+					drawFinishTurnButton(connector, listener);
 				}
 			});
 		}
-		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.ordinal()))
+		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -316,8 +317,8 @@ public class GamePanel extends JPanel
 				{
 					try
 					{
-						playMinigame(connector);
-						finishRound(connector);
+						playMinigame(connector, listener);
+						finishRound(connector, listener);
 
 					}
 					catch (PumbaException e)
@@ -328,7 +329,7 @@ public class GamePanel extends JPanel
 				}
 			});
 		}
-		else if (actualState.getActiveStep().equals(StepEnum.END.ordinal()))
+		else if (actualState.getActiveStep().equals(StepEnum.END.name()))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -342,7 +343,7 @@ public class GamePanel extends JPanel
 		}
 	}
 
-	private void drawFinishTurnButton(Connector connector)
+	private void drawFinishTurnButton(Connector connector, Listener listener)
 	{
 		finishTurnLayer.setBounds(0, 0, 800, 600);
 		finishTurnLayer.setVisible(true);
@@ -358,7 +359,7 @@ public class GamePanel extends JPanel
 			{
 				try
 				{
-					finishTurn(connector);
+					finishTurn(connector, listener);
 				}
 				catch (PumbaException e1)
 				{
@@ -372,7 +373,7 @@ public class GamePanel extends JPanel
 
 	}
 
-	private void playMinigame(Connector connector) throws PumbaException
+	private void playMinigame(Connector connector, Listener listener) throws PumbaException
 	{
 		JPanel minigamePanel = MinigameSelector.randomMinigame(connector, players);
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -381,50 +382,50 @@ public class GamePanel extends JPanel
 		frame.revalidate();
 	}
 
-	private void finishRound(Connector connector) throws PumbaException
+	private void finishRound(Connector connector, Listener listener) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.finishRound(connector, itIsMyTurn());
+			gameController.finishRound(connector);
 			if (connector.getMessage().getApproved())
 			{
-				nextStep(connector);
+				nextStep(connector, listener);
 			}
 		}
 	}
 
-	private void finishTurn(Connector connector) throws PumbaException
+	private void finishTurn(Connector connector, Listener listener) throws PumbaException
 	{
 		finishTurnLayer.setVisible(false);
 		mainLayeredPane.remove(finishTurnLayer);
 
 		synchronized (this)
 		{
-			gameController.finishTurn(connector, itIsMyTurn());
+			gameController.finishTurn(connector);
 			logger.setText(null);
 			mainLayeredPane.remove(actionsLayer);
 			if (connector.getMessage().getApproved())
 			{
-				nextStep(connector);
+				nextStep(connector, listener);
 			}
 		}
 	}
 
-	private void getActivePlayerActions(Connector connector)
+	private void getActivePlayerActions(Connector connector, Listener listener)
 	{
 		synchronized (this)
 		{
-			gameController.getActivePlayerActions(connector, itIsMyTurn());
+			gameController.getActivePlayerActions(connector);
 			if (connector.getMessage().getApproved())
 			{
 				GetActivePlayerActionsMessage message = (GetActivePlayerActionsMessage) connector.getMessage();
-				drawActions(connector, message.getActions());
+				drawActions(connector, listener, message.getActions());
 			}
 		}
 
 	}
 
-	private void drawActions(Connector connector, List<ActionReduced> actions)
+	private void drawActions(Connector connector, Listener listener, List<ActionReduced> actions)
 	{
 		writeLogger("Hace click en una accion abajo.");
 		actionsLayer = new JLayeredPane();
@@ -443,7 +444,7 @@ public class GamePanel extends JPanel
 				{
 					try
 					{
-						executeAction(connector, action.getActionDescription());
+						executeAction(connector, listener, action.getActionDescription());
 					}
 					catch (PumbaException e1)
 					{
@@ -467,11 +468,11 @@ public class GamePanel extends JPanel
 		}
 	}
 
-	private void executeAction(Connector connector, String actionDescription) throws PumbaException
+	private void executeAction(Connector connector, Listener listener, String actionDescription) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.playAction(connector, actionDescription, itIsMyTurn());
+			gameController.playAction(connector, actionDescription);
 			if (connector.getMessage().getApproved())
 			{
 				PlayActionMessage message = (PlayActionMessage) connector.getMessage();
@@ -479,35 +480,35 @@ public class GamePanel extends JPanel
 				writeLogger(message.getResultDescription());
 				players = message.getPlayers();
 				drawScores();
-				nextStep(connector);
+				nextStep(connector, listener);
 			}
 		}
 	}
 
-	private void applyCellEffect(Connector connector) throws PumbaException
+	private void applyCellEffect(Connector connector, Listener listener) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.applyCellEffect(connector, itIsMyTurn());
+			gameController.applyCellEffect(connector);
 			if (connector.getMessage().getApproved())
 			{
 				ApplyCellEffectMessage message = (ApplyCellEffectMessage) connector.getMessage();
 				writeLogger(message.getEffectDescription());
 				players = message.getPlayers();
 				drawScores();
-				nextStep(connector);
+				nextStep(connector, listener);
 			}
 		}
 	}
 
-	private void getPossiblePositions(Connector connector)
+	private void getPossiblePositions(Connector connector, Listener listener)
 	{
 		synchronized (this)
 		{
-			gameController.getPossiblePositions(connector, itIsMyTurn());
+			gameController.getPossiblePositions(connector);
 			if (connector.getMessage().getApproved())
 			{
-				JLayeredPane possiblePositionsLayer = new JLayeredPane();
+				possiblePositionsLayer = new JLayeredPane();
 				mainLayeredPane.add(possiblePositionsLayer, JLayeredPane.POPUP_LAYER);
 				possiblePositionsLayer.setVisible(true);
 				possiblePositionsLayer.setSize(800, 600);
@@ -528,7 +529,7 @@ public class GamePanel extends JPanel
 							{
 								try
 								{
-									move(connector, new PositionReduced(possiblePositionCell.getBounds()));
+									move(connector, listener, new PositionReduced(possiblePositionCell.getBounds()));
 								}
 								catch (PumbaException e1)
 								{
@@ -542,37 +543,70 @@ public class GamePanel extends JPanel
 					possiblePositionsLayer.add(possiblePositionCell);
 				}
 
+				if (!itIsMyTurn())
+				{
+					SwingUtilities.invokeLater(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							try
+							{
+								move(connector, listener, null);
+							}
+							catch (PumbaException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
+
+					});
+
+				}
+
 			}
 		}
 
 	}
 
-	private void move(Connector connector, PositionReduced positionReduced) throws PumbaException
+	private void move(Connector connector, Listener listener, PositionReduced positionReduced) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.move(connector, positionReduced, itIsMyTurn());
-			if (connector.getMessage().getApproved())
+			MoveMessage message;
+			if (itIsMyTurn())
 			{
-				MoveMessage message = (MoveMessage) connector.getMessage();
+				gameController.move(connector, positionReduced);
+				message = (MoveMessage) connector.getMessage();
+			}
+			else
+			{
+				gameController.move(listener, positionReduced);
+				possiblePositionsLayer.setVisible(false);
+				message = (MoveMessage) listener.getMessage();
+			}
+			if (message.getApproved())
+			{
 				if (message.getDestination() != null)
 				{
 					mainLayeredPane.remove(diceLayeredPane);
-					getPlayers(connector);
+					getPlayers(connector, listener);
 					drawPlayers();
 					writeLogger("Te has movido.");
-					nextStep(connector);
+					nextStep(connector, listener);
 				}
 				else
 				{
-					getPossiblePositions(connector);
+					getPossiblePositions(connector, listener);
 				}
 			}
 		}
 
 	}
 
-	private void drawThrowDice(Connector connector)
+	private void drawThrowDice(Connector connector, Listener listener)
 	{
 		mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
 		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
@@ -587,11 +621,13 @@ public class GamePanel extends JPanel
 				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
 			}
 		};
-		Timer timer = new Timer(1000 / 30, taskPerformer);
-		timer.setRepeats(true);
-		timer.start();
 		if (itIsMyTurn())
 		{
+			Timer timer = new Timer(1000 / 30, taskPerformer);
+			timer.setRepeats(true);
+
+			timer.start();
+
 			diceLayeredPane.addMouseListener(new MouseAdapter()
 			{
 				@Override
@@ -600,7 +636,7 @@ public class GamePanel extends JPanel
 					try
 					{
 						timer.stop();
-						throwDice(connector);
+						throwDice(connector, listener);
 
 					}
 					catch (InterruptedException | PumbaException e1)
@@ -621,7 +657,7 @@ public class GamePanel extends JPanel
 				{
 					try
 					{
-						throwDice(connector);
+						throwDice(connector, listener);
 					}
 					catch (InterruptedException e)
 					{
@@ -644,7 +680,7 @@ public class GamePanel extends JPanel
 		writeLogger("Hace click en el dado para tirar.");
 	}
 
-	private void throwDice(Connector connector) throws InterruptedException, PumbaException
+	private void throwDice(Connector connector, Listener listener) throws InterruptedException, PumbaException
 	{
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);
@@ -654,17 +690,36 @@ public class GamePanel extends JPanel
 		mainLayeredPane.add(diceLayeredPane, DICE_LAYER);
 		synchronized (this)
 		{
-			gameController.throwDice(connector, itIsMyTurn());
-			if (connector.getMessage().getApproved())
+			if (itIsMyTurn())
 			{
-				ThrowDiceMessage message = (ThrowDiceMessage) connector.getMessage();
-				throwDice = new ThrowDicePanel(message.getDiceResult());
-				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
-				throwDice.setVisible(true);
-				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
-				writeLogger("Salio un " + message.getDiceResult() + ".");
-				writeLogger("Hace click donde te quieras mover.");
-				nextStep(connector);
+				gameController.throwDice(connector);
+				if (connector.getMessage().getApproved())
+				{
+					ThrowDiceMessage message = (ThrowDiceMessage) connector.getMessage();
+					throwDice = new ThrowDicePanel(message.getDiceResult());
+					throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+					throwDice.setVisible(true);
+					diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
+					writeLogger("Salio un " + message.getDiceResult() + ".");
+					writeLogger("Hace click donde te quieras mover.");
+					nextStep(connector, listener);
+				}
+			}
+			else
+			{
+				gameController.throwDice(listener);
+				if (listener.getMessage().getApproved())
+				{
+					ThrowDiceMessage message = (ThrowDiceMessage) listener.getMessage();
+					throwDice = new ThrowDicePanel(message.getDiceResult());
+					throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+					throwDice.setVisible(true);
+					diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
+					writeLogger("Salio un " + message.getDiceResult() + ".");
+					writeLogger("Hace click donde te quieras mover.");
+					nextStep(connector, listener);
+				}
+
 			}
 		}
 
@@ -712,11 +767,11 @@ public class GamePanel extends JPanel
 
 	}
 
-	private void getPlayers(Connector connector) throws PumbaException
+	private void getPlayers(Connector connector, Listener listener) throws PumbaException
 	{
 		synchronized (this)
 		{
-			gameController.getPlayers(connector, itIsMyTurn());
+			gameController.getPlayers(connector);
 			if (connector.getMessage().getApproved())
 			{
 				GetPlayersMessage message = (GetPlayersMessage) connector.getMessage();
@@ -746,7 +801,7 @@ public class GamePanel extends JPanel
 
 	}
 
-	private void drawBoard(Connector connector)
+	private void drawBoard(Connector connector, Listener listener)
 	{
 		synchronized (this)
 		{
@@ -754,7 +809,7 @@ public class GamePanel extends JPanel
 			boardLayer.setBounds(0, 0, 800, 600);
 			boardLayer.setVisible(true);
 			mainLayeredPane.add(boardLayer, BOARD_LAYER);
-			JPanel boardPanel = new BoardPanel(connector);
+			JPanel boardPanel = new BoardPanel(connector, listener);
 			boardPanel.setVisible(true);
 			boardPanel.setSize(GridPanel.CELL_WIDTH * 12, GridPanel.CELL_WIDTH * 12);
 			boardLayer.add(boardPanel, JLayeredPane.DEFAULT_LAYER);
