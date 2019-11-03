@@ -62,12 +62,12 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 	private ThrowTheDiceMinigameStateReduced actualState;
 
 	private GamePanel gamePanel;
-	
-	private Connector allTimeConnector; 
+
+	private Connector allTimeConnector;
 	private Listener allTimeListener;
-	
-	public ThrowTheDiceMinigamePanel(Connector connector, Listener listener, Connector allTimeConnector, Listener allTimeListener, List<String> playersNames, GamePanel gamePanel)
-			throws PumbaException
+
+	public ThrowTheDiceMinigamePanel(Connector connector, Listener listener, Connector allTimeConnector,
+			Listener allTimeListener, List<String> playersNames, GamePanel gamePanel) throws PumbaException
 	{
 		this.allTimeConnector = allTimeConnector;
 		this.allTimeListener = allTimeListener;
@@ -326,8 +326,12 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private void drawThrowDice(Connector connector, Listener listener)
 	{
+		writeLogger("Es el turno de " + actualState.getActivePlayer());
+		writeLogger("Hace click en el dado para tirar.");
+
 		if (itIsMyTurn())
 		{
+
 			mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
 			diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
 					ThrowDicePanel.DICE_SIZE);
@@ -344,6 +348,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 			Timer timer = new Timer(1000 / 30, taskPerformer);
 			timer.setRepeats(true);
 			timer.start();
+			diceLayeredPane.setVisible(true);
 			diceLayeredPane.addMouseListener(new MouseAdapter()
 			{
 				@Override
@@ -362,28 +367,32 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 				}
 
 			});
-			writeLogger("Es el turno de " + actualState.getActivePlayer());
-			writeLogger("Hace click en el dado para tirar.");
 
 		}
 		else
 		{
-			try
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				writeLogger("Es el turno de " + actualState.getActivePlayer());
-				writeLogger("Hace click en el dado para tirar.");
-				throwDice(connector, listener);
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (PumbaException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				@Override
+				public void run()
+				{
+					try
+					{
+						diceLayeredPane.setVisible(false);
+						throwDice(connector, listener);
+					}
+					catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
 
 		}
 	}
