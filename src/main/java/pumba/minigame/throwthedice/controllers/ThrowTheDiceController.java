@@ -10,11 +10,11 @@ import pumba.messages.ThrowTheDiceMinigameStart;
 import pumba.messages.ThrowTheDiceMinigameThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.sockets.Connector;
+import pumba.sockets.PumbaSocket;
 
 public class ThrowTheDiceController
 {
-	public void getPlayers(Connector connector)
-			throws PumbaException
+	public void getPlayers(Connector connector) throws PumbaException
 	{
 		SocketMessage message = new ThrowTheDiceMinigameGetPlayers();
 		connector.setMessage(message);
@@ -25,37 +25,50 @@ public class ThrowTheDiceController
 	{
 		SocketMessage message = new ThrowTheDiceMinigameNextStepMessage();
 		connector.setMessage(message);
-		connector.run();		
+		connector.run();
 	}
 
 	public void finishRound(Connector connector)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	public void finishTurn(Connector connector)
+	public void finishTurn(PumbaSocket socket)
 	{
 		SocketMessage message = new ThrowTheDiceMinigameFinishTurnMessage();
-		connector.setMessage(message);
-		connector.run();		
-		
-	}
+		socket.setMessage(message);
+		socket.run();
 
-	public void throwDice(Connector connector)
-	{
-		SocketMessage message = new ThrowTheDiceMinigameThrowDiceMessage();
-		connector.setMessage(message);
-		connector.run();		
-		
 	}
 
 	public void start(Connector connector, List<String> playersNames)
 	{
 		SocketMessage message = new ThrowTheDiceMinigameStart(playersNames);
 		connector.setMessage(message);
-		connector.run();		
-		
+		connector.run();
+
 	}
+	
+	public void throwDice(PumbaSocket socket)
+	{
+		SocketMessage message = new ThrowTheDiceMinigameThrowDiceMessage();
+		socket.setMessage(message);
+		socket.run();
+	}
+	
+//	public void throwDice(Listener socket)
+//	{
+//		SocketMessage message = new ThrowTheDiceMinigameThrowDiceMessage();
+//		socket.setMessage(message);
+//		socket.run();
+//	}
+//
+//	public void throwDice(Connector socket)
+//	{
+//		SocketMessage message = new ThrowTheDiceMinigameThrowDiceMessage();
+//		socket.setMessage(message);
+//		socket.run();
+//	}
 
 }

@@ -26,14 +26,17 @@ import org.apache.commons.lang3.StringUtils;
 import pumba.exceptions.PumbaException;
 import pumba.interfaces.game.GamePanel;
 import pumba.interfaces.game.steps.ThrowDicePanel;
+import pumba.messages.ThrowTheDiceMinigameFinishTurnMessage;
 import pumba.messages.ThrowTheDiceMinigameGetPlayers;
 import pumba.messages.ThrowTheDiceMinigameNextStepMessage;
 import pumba.messages.ThrowTheDiceMinigameStart;
 import pumba.messages.ThrowTheDiceMinigameThrowDiceMessage;
+import pumba.messages.utils.SocketMessage;
 import pumba.minigame.throwthedice.controllers.ThrowTheDiceController;
 import pumba.minigame.throwthedice.models.ThrowTheDiceMinigameStateEnum;
 import pumba.minigame.throwthedice.models.ThrowTheDiceMinigameStateReduced;
 import pumba.sockets.Connector;
+import pumba.sockets.Listener;
 
 public class ThrowTheDiceMinigamePanel extends JPanel
 {
@@ -58,8 +61,12 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private ThrowTheDiceMinigameStateReduced actualState;
 
-	public ThrowTheDiceMinigamePanel(Connector connector, List<String> playersNames) throws PumbaException
+	private GamePanel gamePanel;
+	
+	public ThrowTheDiceMinigamePanel(Connector connector, Listener listener, List<String> playersNames, GamePanel gamePanel)
+			throws PumbaException
 	{
+		this.gamePanel = gamePanel;
 		mainLayeredPane.setVisible(true);
 		mainLayeredPane.setSize(800, 600);
 		add(mainLayeredPane);
@@ -68,7 +75,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		startMinigame(connector, playersNames);
 		drawScores();
 		drawLogger();
-		nextStep(connector);
+		nextStep(connector, listener);
 		setSize(800, 600);
 		setLayout(null);
 		setVisible(true);
@@ -162,7 +169,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	}
 
-	private void nextStep(Connector connector) throws PumbaException
+	private void nextStep(Connector connector, Listener listener) throws PumbaException
 	{
 		synchronized (this)
 		{
@@ -172,46 +179,112 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 				ThrowTheDiceMinigameNextStepMessage message = (ThrowTheDiceMinigameNextStepMessage) connector
 						.getMessage();
 				actualState = message.getActualState();
-				processNextStep(connector);
+				processNextStep(connector, listener);
 			}
 		}
 	}
 
-	private void processNextStep(Connector connector) throws PumbaException
+	private void processNextStep(Connector connector, Listener listener) throws PumbaException
 	{
-		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.THROW_DICE.ordinal()))
+		System.out.println("Paso por aca!");
+		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.THROW_DICE))
 		{
-			drawThrowDice(connector);
-		}
-		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.WAIT.ordinal()))
-		{
-			ActionListener taskPerformer = new ActionListener()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				public void actionPerformed(ActionEvent evt)
+
+				@Override
+				public void run()
+				{
+					drawThrowDice(connector, listener);
+
+				}
+			});
+
+		}
+		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.WAIT))
+		{
+
+			SwingUtilities.invokeLater(new Runnable()
+			{
+
+				@Override
+				public void run()
+				{
+					processWait(connector, listener);
+
+				}
+			});
+		}
+		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.END))
+		{
+			writeLogger("El minijuego ha terminado.");
+			writeLogger("Llevense sus bichos.");
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
 				{
 					try
 					{
-						finishTurn(connector);
+						endGame(connector);
 					}
 					catch (PumbaException e)
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 				}
-			};
+			});
+		}
 
+	}
+
+	private void processWait(Connector connector, Listener listener)
+	{
+		ActionListener taskPerformer = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				try
+				{
+					finishTurn(connector, listener);
+				}
+				catch (PumbaException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		};
+
+		if (itIsMyTurn())
+		{
 			Timer timer = new Timer(GamePanel.delay, taskPerformer);
 			timer.setRepeats(false);
 			timer.start();
 		}
-		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.END.ordinal()))
+		else
 		{
-			writeLogger("El minijuego ha terminado.");
-			writeLogger("Llevense sus bichos.");
-			endGame(connector);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						finishTurn(connector, listener);
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+
 		}
+
 	}
 
 	private void endGame(Connector connector) throws PumbaException
@@ -223,87 +296,141 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 		frame.revalidate();
 	}
 
-	private void finishTurn(Connector connector) throws PumbaException
+	private void finishTurn(Connector connector, Listener listener) throws PumbaException
 	{
 		synchronized (this)
 		{
-			minigameController.finishTurn(connector);
-			logger.setText(null);
-			if (connector.getMessage().getApproved())
+			ThrowTheDiceMinigameFinishTurnMessage message;
+			if (itIsMyTurn())
 			{
-				nextStep(connector);
+				minigameController.finishTurn(connector);
+				message = (ThrowTheDiceMinigameFinishTurnMessage) connector.getMessage();
+			}
+			else
+			{
+				minigameController.finishTurn(listener);
+				message = (ThrowTheDiceMinigameFinishTurnMessage) listener.getMessage();
+
+			}
+			logger.setText(null);
+			if (message.getApproved())
+			{
+				nextStep(connector, listener);
 			}
 		}
 	}
 
-	private void drawThrowDice(Connector connector)
+	private void drawThrowDice(Connector connector, Listener listener)
 	{
-		mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
-		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
-				ThrowDicePanel.DICE_SIZE);
-		ActionListener taskPerformer = new ActionListener()
+		if (itIsMyTurn())
 		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				JPanel throwDice = new ThrowDicePanel();
-				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
-				throwDice.setVisible(true);
-				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
-			}
-		};
-		Timer timer = new Timer(1000 / 30, taskPerformer);
-		timer.setRepeats(true);
-		timer.start();
+			System.out.println("Es mi turno y dibujo el dado");
 
-		diceLayeredPane.addMouseListener(new MouseAdapter()
+			mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
+			diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
+					ThrowDicePanel.DICE_SIZE);
+			ActionListener taskPerformer = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					JPanel throwDice = new ThrowDicePanel();
+					throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+					throwDice.setVisible(true);
+					diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
+				}
+			};
+			Timer timer = new Timer(1000 / 30, taskPerformer);
+			timer.setRepeats(true);
+			timer.start();
+			System.out.println("Activo el timer");
+
+			diceLayeredPane.addMouseListener(new MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(MouseEvent e)
+				{
+					try
+					{
+						timer.stop();
+						System.out.println("Ejecuto throwDice y es mi turno");
+						throwDice(connector, listener);
+
+					}
+					catch (InterruptedException | PumbaException e1)
+					{
+						e1.printStackTrace();
+					}
+				}
+
+			});
+		}
+		else
 		{
-			@Override
-			public void mouseClicked(MouseEvent e)
-			{
-				try
-				{
-					timer.stop();
-					throwDice(connector);
+			System.out.println("No es mi turno, SWING haz lo tuyo");
 
-				}
-				catch (InterruptedException | PumbaException e1)
-				{
-					e1.printStackTrace();
-				}
+			try
+			{
+				System.out.println("Ejecuto throwDice y no es mi turno");
+				throwDice(connector, listener);
+			}
+			catch (InterruptedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (PumbaException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
-		});
-
+		}
 		writeLogger("Es el turno de " + actualState.getActivePlayer());
 		writeLogger("Hace click en el dado para tirar.");
+		System.out.println("Termino la rutina drawThrowDice");
+
 	}
 
-	private void throwDice(Connector connector) throws InterruptedException, PumbaException
+	private void throwDice(Connector connector, Listener listener) throws InterruptedException, PumbaException
 	{
+		System.out.println("Entro a la rutina throwDice");
+
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);
 		diceLayeredPane = new JLayeredPane();
 		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
 				ThrowDicePanel.DICE_SIZE);
 		mainLayeredPane.add(diceLayeredPane, JLayeredPane.DEFAULT_LAYER, DICE_LAYER);
+		ThrowTheDiceMinigameThrowDiceMessage message;
+
 		synchronized (this)
 		{
-			minigameController.throwDice(connector);
-			if (connector.getMessage().getApproved())
+			System.out.println("Estoy por tirar el dado");
+			if (itIsMyTurn())
 			{
-				ThrowTheDiceMinigameThrowDiceMessage message = (ThrowTheDiceMinigameThrowDiceMessage) connector
-						.getMessage();
-				throwDice = new ThrowDicePanel(message.getResult().getDiceResult());
-				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
-				throwDice.setVisible(true);
-				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
-				writeLogger(message.getResult().getDescription());
-				getPlayers(connector);
-				drawScores();
-				nextStep(connector);
+				minigameController.throwDice(connector);
+				message = (ThrowTheDiceMinigameThrowDiceMessage) connector.getMessage();
+				System.out.println("Tire el dado");
 			}
-		}
+			else
+			{
+				minigameController.throwDice(listener);
+				message = (ThrowTheDiceMinigameThrowDiceMessage) listener.getMessage();
+				System.out.println("Tire el dado");
+			}
 
+		}
+		if (message.getApproved())
+		{
+			throwDice = new ThrowDicePanel(message.getResult().getDiceResult());
+			throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+			throwDice.setVisible(true);
+			diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
+			writeLogger(message.getResult().getDescription());
+			getPlayers(connector);
+			drawScores();
+			nextStep(connector, listener);
+		}
 	}
 
 	private void drawScores()
@@ -357,4 +484,12 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	}
 
+	private Boolean itIsMyTurn()
+	{
+		if (actualState != null && actualState.getActivePlayer() != null)
+		{
+			return actualState.getActivePlayer().equals(SocketMessage.getClientId());
+		}
+		return true;
+	}
 }

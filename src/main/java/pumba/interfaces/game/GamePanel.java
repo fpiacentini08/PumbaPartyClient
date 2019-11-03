@@ -258,6 +258,7 @@ public class GamePanel extends JPanel
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
+
 				@Override
 				public void run()
 				{
@@ -286,6 +287,7 @@ public class GamePanel extends JPanel
 			});
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.SELECT_ACTION.name()))
+
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -310,24 +312,38 @@ public class GamePanel extends JPanel
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.name()))
 		{
-			SwingUtilities.invokeLater(new Runnable()
+			// SwingUtilities.invokeLater(new Runnable()
+			// {
+			// @Override
+			// public void run()
+			// {
+			// try
+			// {
+			// playMinigame(connector, listener);
+			// finishRound(connector, listener);
+			//
+			// }
+			// catch (PumbaException e)
+			// {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// }
+			// });
+			try
 			{
-				@Override
-				public void run()
+				synchronized (this)
 				{
-					try
-					{
-						playMinigame(connector, listener);
-						finishRound(connector, listener);
-
-					}
-					catch (PumbaException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					finishRound(connector, listener);
+					playMinigame(connector, listener);
 				}
-			});
+			}
+			catch (PumbaException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finishRound(connector, listener);
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.END.name()))
 		{
@@ -390,7 +406,7 @@ public class GamePanel extends JPanel
 
 	private void playMinigame(Connector connector, Listener listener) throws PumbaException
 	{
-		JPanel minigamePanel = MinigameSelector.randomMinigame(connector, players);
+		JPanel minigamePanel = MinigameSelector.randomMinigame(connector, listener, players, this);
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 		minigamePanel.setVisible(true);
 		frame.setContentPane(minigamePanel);
@@ -404,7 +420,7 @@ public class GamePanel extends JPanel
 			gameController.finishRound(connector);
 			if (connector.getMessage().getApproved())
 			{
-				nextStep(connector, listener);
+//				nextStep(connector, listener);
 			}
 		}
 	}
@@ -620,6 +636,7 @@ public class GamePanel extends JPanel
 				{
 					SwingUtilities.invokeLater(new Runnable()
 					{
+
 						@Override
 						public void run()
 						{
