@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,6 +19,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -38,9 +40,11 @@ import pumba.messages.ApplyCellEffectMessage;
 import pumba.messages.GetActivePlayerActionsMessage;
 import pumba.messages.GetPlayersMessage;
 import pumba.messages.GetPossiblePositionsMessage;
+import pumba.messages.InterruptMessage;
 import pumba.messages.MoveMessage;
 import pumba.messages.NextStepMessage;
 import pumba.messages.PlayActionMessage;
+import pumba.messages.StartAllTimeConnectionMessage;
 import pumba.messages.ThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.minigame.MinigameSelector;
@@ -84,11 +88,95 @@ public class GamePanel extends JPanel
 
 	private static StateReduced actualState;
 
-	public GamePanel(Connector connector, Listener listener) throws PumbaException
+	private Connector allTimeConnector;
+	private Listener allTimeListener;
+
+	public GamePanel(Connector connector, Listener listener, Connector allTimeConnector, Listener allTimeListener)
+			throws PumbaException
 	{
+		this.allTimeConnector = allTimeConnector;
+		this.allTimeListener = allTimeListener;
 		mainLayeredPane.setVisible(true);
 		mainLayeredPane.setSize(800, 600);
 		add(mainLayeredPane);
+
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					getCurrentState(connector, listener);
+				}
+				catch (PumbaException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+		});
+		
+		SocketMessage message = new StartAllTimeConnectionMessage(SocketMessage.getClientId() + "LISTENER");
+		allTimeConnector.setMessage(message);
+		// allTimeConnector.start();
+
+		SwingWorker<Listener, Void> worker = new SwingWorker<Listener, Void>()
+		{
+			@Override
+			public Listener doInBackground()
+			{
+				allTimeListener.setMessage(new InterruptMessage(SocketMessage.getClientId() + "LISTENER"));
+				allTimeListener.setAssociatedWorker(this);
+				allTimeListener.run();
+				return allTimeListener;
+			}
+
+			@Override
+			public void done()
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							get();
+						}
+						catch (InterruptedException | ExecutionException e1)
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						if (!isCancelled())
+						{
+							System.out.println("Ejecuta el worker");
+							try
+							{
+								System.out.println("Se ejecuta proximo paso por interrupcion");
+								nextStep(connector, listener);
+							}
+							catch (PumbaException e)
+							{
+								e.printStackTrace();
+							}
+						}
+
+					}
+				});
+
+			}
+		};
+		// SwingUtilities.invokeLater(new Runnable()
+		// {
+		// @Override
+		// public void run()
+		// {
+		// worker.execute();
+		// }
+		// });
+
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -126,6 +214,7 @@ public class GamePanel extends JPanel
 				drawLogger();
 			}
 		});
+
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -141,12 +230,27 @@ public class GamePanel extends JPanel
 				}
 			}
 		});
+		
 		setSize(800, 600);
 		setLayout(null);
 		setVisible(true);
 
 	}
 
+	private void getCurrentState(Connector connector, Listener listener) throws PumbaException
+	{
+		synchronized (this)
+		{
+			gameController.nextStep(connector);
+			if (connector.getMessage().getApproved())
+			{
+				NextStepMessage message = (NextStepMessage) connector.getMessage();
+				actualState = message.getActualState();
+			}
+		}				
+	}
+
+	
 	private Boolean itIsMyTurn()
 	{
 		if (actualState != null && actualState.getActivePlayer() != null)
@@ -250,6 +354,7 @@ public class GamePanel extends JPanel
 				@Override
 				public void run()
 				{
+					drawPlayers();
 					drawThrowDice(connector, listener);
 				}
 			});
@@ -317,7 +422,7 @@ public class GamePanel extends JPanel
 				synchronized (this)
 				{
 					finishRound(connector, listener);
-					playMinigame(connector, listener);
+					playMinigame(connector, listener, allTimeConnector, allTimeListener);
 				}
 			}
 			catch (PumbaException e)
@@ -333,6 +438,15 @@ public class GamePanel extends JPanel
 				@Override
 				public void run()
 				{
+					try
+					{
+						getPlayers(connector, listener);
+					}
+					catch (PumbaException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					writeLogger("TERMINO EL JUEGO");
 					writeLogger("Gano " + players.get(0).getUsername());
 				}
@@ -385,9 +499,11 @@ public class GamePanel extends JPanel
 
 	}
 
-	private void playMinigame(Connector connector, Listener listener) throws PumbaException
+	private void playMinigame(Connector connector, Listener listener, Connector allTimeConnector,
+			Listener allTimeListener) throws PumbaException
 	{
-		JPanel minigamePanel = MinigameSelector.randomMinigame(connector, listener, players, this);
+		JPanel minigamePanel = MinigameSelector.randomMinigame(connector, listener, allTimeConnector, allTimeListener,
+				players, this);
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 		minigamePanel.setVisible(true);
 		frame.setContentPane(minigamePanel);
@@ -803,10 +919,12 @@ public class GamePanel extends JPanel
 		Integer playerNumber = 0;
 		for (PlayerReduced player : players)
 		{
-			playerPanel = new PlayerPanel(player, playerNumber++);
+			playerPanel = new PlayerPanel(player, playerNumber++,
+					actualState.getActivePlayer().getUsername().equals(player.getUsername()));
 			playerPanel.setBounds(GridPanel.CELL_WIDTH * player.getPosition().getPosX(),
 					GridPanel.CELL_WIDTH * player.getPosition().getPosY(), 30, 30);
 			playerPanel.setSize(30, 30);
+
 			playersLayeredPane.add(playerPanel, JLayeredPane.MODAL_LAYER);
 			JLabel lblNewLabel = new JLabel(player.getUsername());
 			lblNewLabel.setForeground(Color.YELLOW);

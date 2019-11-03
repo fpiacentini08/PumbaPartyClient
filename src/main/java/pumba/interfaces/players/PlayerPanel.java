@@ -1,5 +1,6 @@
 package pumba.interfaces.players;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -22,10 +23,12 @@ public class PlayerPanel extends JPanel
 	private static final long serialVersionUID = 2523539419055360451L;
 	protected BufferedImage image = null;
 	protected static final List<BufferedImage> imageList = loadImages();
+	private Boolean activePlayer;
 
-	public PlayerPanel(PlayerReduced player, Integer playerNumber)
+	public PlayerPanel(PlayerReduced player, Integer playerNumber, Boolean activePlayer)
 	{
 		super();
+		this.activePlayer = activePlayer;
 		setVisible(true);
 		setLayout(null);
 		setBackground(new Color(0, 0, 0, 0));
@@ -66,8 +69,16 @@ public class PlayerPanel extends JPanel
 		TexturePaint slateTp = new TexturePaint(image, new Rectangle(0, 0, 30, 30));
 		g2d.setPaint(slateTp);
 		g2d.fillRect(0, 0, 30, 30);
-		g2d.setColor(Color.BLACK);
-		g2d.drawRect(0, 0, 30, 30);
+		if (activePlayer)
+		{
+			g2d.setColor(Color.GREEN);
+			g2d.setStroke(new BasicStroke(4));
+		}
+		else
+		{
+			g2d.setColor(Color.BLACK);
+		}
+		g2d.drawRect(0, 0, 31, 31);
 		g2d.dispose();
 	}
 }

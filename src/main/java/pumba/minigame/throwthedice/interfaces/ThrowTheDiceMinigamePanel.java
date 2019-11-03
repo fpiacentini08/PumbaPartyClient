@@ -63,9 +63,14 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private GamePanel gamePanel;
 	
-	public ThrowTheDiceMinigamePanel(Connector connector, Listener listener, List<String> playersNames, GamePanel gamePanel)
+	private Connector allTimeConnector; 
+	private Listener allTimeListener;
+	
+	public ThrowTheDiceMinigamePanel(Connector connector, Listener listener, Connector allTimeConnector, Listener allTimeListener, List<String> playersNames, GamePanel gamePanel)
 			throws PumbaException
 	{
+		this.allTimeConnector = allTimeConnector;
+		this.allTimeListener = allTimeListener;
 		this.gamePanel = gamePanel;
 		mainLayeredPane.setVisible(true);
 		mainLayeredPane.setSize(800, 600);
@@ -186,7 +191,6 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private void processNextStep(Connector connector, Listener listener) throws PumbaException
 	{
-		System.out.println("Paso por aca!");
 		if (actualState.getActiveStep().equals(ThrowTheDiceMinigameStateEnum.THROW_DICE))
 		{
 			SwingUtilities.invokeLater(new Runnable()
@@ -289,7 +293,7 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 	private void endGame(Connector connector, Listener listener) throws PumbaException
 	{
-		JPanel gamePanel = new GamePanel(connector, listener);
+		JPanel gamePanel = new GamePanel(connector, listener, allTimeConnector, allTimeListener);
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 		gamePanel.setVisible(true);
 		frame.setContentPane(gamePanel);
@@ -324,8 +328,6 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 	{
 		if (itIsMyTurn())
 		{
-			System.out.println("Es mi turno y dibujo el dado");
-
 			mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
 			diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
 					ThrowDicePanel.DICE_SIZE);
@@ -342,8 +344,6 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 			Timer timer = new Timer(1000 / 30, taskPerformer);
 			timer.setRepeats(true);
 			timer.start();
-			System.out.println("Activo el timer");
-
 			diceLayeredPane.addMouseListener(new MouseAdapter()
 			{
 				@Override
@@ -352,7 +352,6 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 					try
 					{
 						timer.stop();
-						System.out.println("Ejecuto throwDice y es mi turno");
 						throwDice(connector, listener);
 
 					}
@@ -363,14 +362,16 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 				}
 
 			});
+			writeLogger("Es el turno de " + actualState.getActivePlayer());
+			writeLogger("Hace click en el dado para tirar.");
+
 		}
 		else
 		{
-			System.out.println("No es mi turno, SWING haz lo tuyo");
-
 			try
 			{
-				System.out.println("Ejecuto throwDice y no es mi turno");
+				writeLogger("Es el turno de " + actualState.getActivePlayer());
+				writeLogger("Hace click en el dado para tirar.");
 				throwDice(connector, listener);
 			}
 			catch (InterruptedException e)
@@ -385,16 +386,10 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 			}
 
 		}
-		writeLogger("Es el turno de " + actualState.getActivePlayer());
-		writeLogger("Hace click en el dado para tirar.");
-		System.out.println("Termino la rutina drawThrowDice");
-
 	}
 
 	private void throwDice(Connector connector, Listener listener) throws InterruptedException, PumbaException
 	{
-		System.out.println("Entro a la rutina throwDice");
-
 		JPanel throwDice = null;
 		mainLayeredPane.remove(diceLayeredPane);
 		diceLayeredPane = new JLayeredPane();
@@ -405,18 +400,15 @@ public class ThrowTheDiceMinigamePanel extends JPanel
 
 		synchronized (this)
 		{
-			System.out.println("Estoy por tirar el dado");
 			if (itIsMyTurn())
 			{
 				minigameController.throwDice(connector);
 				message = (ThrowTheDiceMinigameThrowDiceMessage) connector.getMessage();
-				System.out.println("Tire el dado");
 			}
 			else
 			{
 				minigameController.throwDice(listener);
 				message = (ThrowTheDiceMinigameThrowDiceMessage) listener.getMessage();
-				System.out.println("Tire el dado");
 			}
 
 		}

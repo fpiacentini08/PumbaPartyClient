@@ -119,7 +119,7 @@ public abstract class PumbaSocket extends Thread
 
 	}
 	
-	protected SocketMessage receiveMessage() throws JsonSyntaxException, ClassNotFoundException, IOException
+	public SocketMessage receiveMessage() throws JsonSyntaxException, ClassNotFoundException, IOException
 	{
 		SocketMessage message = gson.fromJson((String) this.in.readObject(), SocketMessage.class);
 		Log.debugLine();

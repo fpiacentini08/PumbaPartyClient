@@ -17,7 +17,7 @@ public class MinigameSelector
 {
 	private static final Random rand = new Random();
 
-	public static JPanel randomMinigame(Connector connector, Listener listener, List<PlayerReduced> players, GamePanel gamePanel) throws PumbaException
+	public static JPanel randomMinigame(Connector connector, Listener listener, Connector allTimeConnector, Listener allTimeListener, List<PlayerReduced> players, GamePanel gamePanel) throws PumbaException
 	{
 		List<String> playersNames = players.stream().map(p -> p.getUsername()).collect(Collectors.toList());
 
@@ -25,7 +25,7 @@ public class MinigameSelector
 		switch (rand.nextInt(1))
 		{
 			default:
-				minigamePanel = new ThrowTheDiceMinigamePanel(connector, listener, playersNames, gamePanel);
+				minigamePanel = new ThrowTheDiceMinigamePanel(connector, listener, allTimeConnector, allTimeListener, playersNames, gamePanel);
 		}
 
 		return minigamePanel;

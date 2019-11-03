@@ -22,7 +22,9 @@ public class ClientMain
 					// LoginFrame frame = new LoginFrame();
 					Connector connector = new Connector();
 					Listener listener = new Listener(connector);
-					GameFrame frame = new GameFrame(username, connector, listener);
+					Connector allTimeConnector = new Connector();
+					Listener allTimeListener = new Listener(allTimeConnector);
+					GameFrame frame = new GameFrame(username, connector, listener, allTimeConnector, allTimeListener);
 					frame.setVisible(true);
 				}
 				catch (Exception e)
