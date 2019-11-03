@@ -14,141 +14,95 @@ import pumba.messages.StartTestGameMessage;
 import pumba.messages.ThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.PositionReduced;
-import pumba.sockets.Connector;
-import pumba.sockets.Listener;
+import pumba.sockets.PumbaSocket;
 
 public class GameController
 {
 
-	public void startTestGame(Connector connector) throws PumbaException
+	public void startTestGame(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new StartTestGameMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 	}
 
-	public void getPlayers(Connector connector) throws PumbaException
+	public void getPlayers(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new GetPlayersMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void nextStep(Connector connector) throws PumbaException
+	public void nextStep(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new NextStepMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void throwDice(Connector connector) throws PumbaException
+	public void throwDice(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new ThrowDiceMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 	}
 
-	public void getPossiblePositions(Connector connector)
+	public void getPossiblePositions(PumbaSocket socket)
 	{
 		SocketMessage message = new GetPossiblePositionsMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void move(Connector connector, PositionReduced positionReduced)
+	public void move(PumbaSocket socket, PositionReduced positionReduced)
 	{
 		SocketMessage message = new MoveMessage(positionReduced);
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void applyCellEffect(Connector connector)
+	public void applyCellEffect(PumbaSocket socket)
 	{
 		SocketMessage message = new ApplyCellEffectMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void getActivePlayerActions(Connector connector)
+	public void getActivePlayerActions(PumbaSocket socket)
 	{
 		SocketMessage message = new GetActivePlayerActionsMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void playAction(Connector connector, String actionDescription)
+	public void playAction(PumbaSocket socket, String actionDescription)
 	{
 		SocketMessage message = new PlayActionMessage(actionDescription);
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void finishTurn(Connector connector)
+	public void finishTurn(PumbaSocket socket)
 	{
 		SocketMessage message = new FinishTurnMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void finishRound(Connector connector)
+	public void finishRound(PumbaSocket socket)
 	{
 		SocketMessage message = new FinishRoundMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 
-	public void throwDice(Listener listener)
-	{
-		SocketMessage message = new FinishRoundMessage();
-		listener.setMessage(message);
-		listener.run();
-		
-	}
-
-	public void move(Listener listener, PositionReduced positionReduced)
-	{
-		SocketMessage message = new MoveMessage(positionReduced);
-		listener.setMessage(message);
-		listener.run();
-		
-	}
-
-	public void playAction(Listener listener, String actionDescription)
-	{
-		SocketMessage message = new PlayActionMessage();
-		listener.setMessage(message);
-		listener.run();
-		
-	}
-
-	public void finishTurn(Listener listener)
-	{
-		SocketMessage message = new FinishTurnMessage();
-		listener.setMessage(message);
-		listener.run();
-		
-	}
-
-	public void applyCellEffect(Listener listener)
-	{
-		SocketMessage message = new ApplyCellEffectMessage();
-		listener.setMessage(message);
-		listener.run();
-	}
-
-	public void getActivePlayerActions(Listener listener)
-	{
-		SocketMessage message = new GetActivePlayerActionsMessage();
-		listener.setMessage(message);
-		listener.run();
-	}
 }

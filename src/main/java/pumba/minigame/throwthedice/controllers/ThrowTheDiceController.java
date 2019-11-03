@@ -9,29 +9,22 @@ import pumba.messages.ThrowTheDiceMinigameNextStepMessage;
 import pumba.messages.ThrowTheDiceMinigameStart;
 import pumba.messages.ThrowTheDiceMinigameThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
-import pumba.sockets.Connector;
 import pumba.sockets.PumbaSocket;
 
 public class ThrowTheDiceController
 {
-	public void getPlayers(Connector connector) throws PumbaException
+	public void getPlayers(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new ThrowTheDiceMinigameGetPlayers();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 	}
 
-	public void nextStep(Connector connector)
+	public void nextStep(PumbaSocket socket)
 	{
 		SocketMessage message = new ThrowTheDiceMinigameNextStepMessage();
-		connector.setMessage(message);
-		connector.run();
-	}
-
-	public void finishRound(Connector connector)
-	{
-		// TODO Auto-generated method stub
-
+		socket.setMessage(message);
+		socket.run();
 	}
 
 	public void finishTurn(PumbaSocket socket)
@@ -42,11 +35,11 @@ public class ThrowTheDiceController
 
 	}
 
-	public void start(Connector connector, List<String> playersNames)
+	public void start(PumbaSocket socket, List<String> playersNames)
 	{
 		SocketMessage message = new ThrowTheDiceMinigameStart(playersNames);
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 
 	}
 	
@@ -57,18 +50,6 @@ public class ThrowTheDiceController
 		socket.run();
 	}
 	
-//	public void throwDice(Listener socket)
-//	{
-//		SocketMessage message = new ThrowTheDiceMinigameThrowDiceMessage();
-//		socket.setMessage(message);
-//		socket.run();
-//	}
-//
-//	public void throwDice(Connector socket)
-//	{
-//		SocketMessage message = new ThrowTheDiceMinigameThrowDiceMessage();
-//		socket.setMessage(message);
-//		socket.run();
-//	}
+
 
 }

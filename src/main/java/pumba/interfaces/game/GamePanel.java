@@ -676,21 +676,22 @@ public class GamePanel extends JPanel
 
 	private void drawThrowDice(Connector connector, Listener listener)
 	{
-		mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
-		diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
-				ThrowDicePanel.DICE_SIZE);
-		ActionListener taskPerformer = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				JPanel throwDice = new ThrowDicePanel();
-				throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
-				throwDice.setVisible(true);
-				diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
-			}
-		};
 		if (itIsMyTurn())
 		{
+			mainLayeredPane.add(diceLayeredPane, JLayeredPane.POPUP_LAYER, DICE_LAYER);
+			diceLayeredPane.setBounds(ThrowDicePanel.DICE_POS_X, ThrowDicePanel.DICE_POS_Y, ThrowDicePanel.DICE_SIZE,
+					ThrowDicePanel.DICE_SIZE);
+			ActionListener taskPerformer = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					JPanel throwDice = new ThrowDicePanel();
+					throwDice.setSize(ThrowDicePanel.DICE_SIZE, ThrowDicePanel.DICE_SIZE);
+					throwDice.setVisible(true);
+					diceLayeredPane.add(throwDice, JLayeredPane.POPUP_LAYER);
+				}
+			};
+
 			Timer timer = new Timer(1000 / 30, taskPerformer);
 			timer.setRepeats(true);
 
