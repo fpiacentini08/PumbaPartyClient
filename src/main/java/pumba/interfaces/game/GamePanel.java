@@ -312,24 +312,6 @@ public class GamePanel extends JPanel
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.MINIGAME.name()))
 		{
-			// SwingUtilities.invokeLater(new Runnable()
-			// {
-			// @Override
-			// public void run()
-			// {
-			// try
-			// {
-			// playMinigame(connector, listener);
-			// finishRound(connector, listener);
-			//
-			// }
-			// catch (PumbaException e)
-			// {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// }
-			// });
 			try
 			{
 				synchronized (this)
@@ -418,10 +400,6 @@ public class GamePanel extends JPanel
 		synchronized (this)
 		{
 			gameController.finishRound(connector);
-			if (connector.getMessage().getApproved())
-			{
-//				nextStep(connector, listener);
-			}
 		}
 	}
 
