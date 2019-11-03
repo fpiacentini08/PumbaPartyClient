@@ -325,7 +325,6 @@ public class GamePanel extends JPanel
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			finishRound(connector, listener);
 		}
 		else if (actualState.getActiveStep().equals(StepEnum.END.name()))
 		{
