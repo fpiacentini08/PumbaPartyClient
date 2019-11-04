@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import pumba.ClientMain;
 import pumba.models.players.PlayerReduced;
 
 public class PlayerPanel extends JPanel
@@ -41,11 +41,11 @@ public class PlayerPanel extends JPanel
 		try
 		{
 			List<BufferedImage> list = new ArrayList<>();
-			list.add(ImageIO.read(new File("src/resources/img/SimbaFace.jpg")));
-			list.add(ImageIO.read(new File("src/resources/img/TimonFace.jpg")));
-			list.add(ImageIO.read(new File("src/resources/img/PumbaFace.jpg")));
-			list.add(ImageIO.read(new File("src/resources/img/ScarFace.jpg")));
-			list.add(ImageIO.read(new File("src/resources/img/ZazuFace.jpg")));
+			list.add( ImageIO.read(ClientMain.class.getResource("/SimbaFace.jpg")));
+			list.add( ImageIO.read(ClientMain.class.getResource("/TimonFace.jpg")));
+			list.add( ImageIO.read(ClientMain.class.getResource("/PumbaFace.jpg")));
+			list.add( ImageIO.read(ClientMain.class.getResource("/ScarFace.jpg")));
+			list.add( ImageIO.read(ClientMain.class.getResource("/ZazuFace.jpg")));
 			return list;
 		}
 		catch (IOException e)

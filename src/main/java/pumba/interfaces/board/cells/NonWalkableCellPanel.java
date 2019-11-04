@@ -5,10 +5,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import pumba.ClientMain;
 
 public class NonWalkableCellPanel extends CellPanel
 {
@@ -25,7 +26,7 @@ public class NonWalkableCellPanel extends CellPanel
 	{
 		try
 		{
-			return ImageIO.read(new File("src/resources/img/GrassTexture.jpg"));
+			return ImageIO.read(ClientMain.class.getResource("/GrassTexture.jpg"));
 		}
 		catch (IOException e)
 		{

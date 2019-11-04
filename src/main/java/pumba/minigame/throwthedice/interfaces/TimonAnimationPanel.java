@@ -21,7 +21,7 @@
 //		try
 //		{
 //			List<BufferedImage> spriteList = new ArrayList<>();
-//			BufferedImage spriteSheet = ImageIO.read(new File("src/resources/img/TimonSpriteSheet.png"));
+//			BufferedImage spriteSheet = ImageIO.read(new File("src/main/resources/img/TimonSpriteSheet.png"));
 //			Integer spriteWidth = spriteSheet.getWidth() / 8;
 //			Integer spriteHeigth = spriteSheet.getHeight() / 3;
 //			for (int i = 0; i < spriteSheet.getWidth() - spriteWidth; i = i + spriteWidth)
