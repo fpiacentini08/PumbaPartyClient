@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -116,7 +117,7 @@ public class GamePanel extends JPanel
 			}
 
 		});
-		
+
 		SocketMessage message = new StartAllTimeConnectionMessage(SocketMessage.getClientId() + "LISTENER");
 		allTimeConnector.setMessage(message);
 		// allTimeConnector.start();
@@ -230,7 +231,7 @@ public class GamePanel extends JPanel
 				}
 			}
 		});
-		
+
 		setSize(800, 600);
 		setLayout(null);
 		setVisible(true);
@@ -247,10 +248,9 @@ public class GamePanel extends JPanel
 				NextStepMessage message = (NextStepMessage) connector.getMessage();
 				actualState = message.getActualState();
 			}
-		}				
+		}
 	}
 
-	
 	private Boolean itIsMyTurn()
 	{
 		if (actualState != null && actualState.getActivePlayer() != null)
@@ -448,10 +448,18 @@ public class GamePanel extends JPanel
 						e.printStackTrace();
 					}
 					writeLogger("TERMINO EL JUEGO");
-					writeLogger("Gano " + players.get(0).getUsername());
+					writeLogger("Gano " + getWinner());
 				}
+
 			});
 		}
+	}
+
+	private String getWinner()
+	{
+		Collections.sort(players);
+		Collections.reverse(players);
+		return players.get(0).getUsername();
 	}
 
 	private void drawFinishTurnButton(Connector connector, Listener listener)
@@ -919,8 +927,7 @@ public class GamePanel extends JPanel
 		Integer playerNumber = 0;
 		for (PlayerReduced player : players)
 		{
-			playerPanel = new PlayerPanel(player, playerNumber++,
-					actualState.getActivePlayer().getUsername().equals(player.getUsername()));
+			playerPanel = new PlayerPanel(player, playerNumber++, thisPlayersTurn(player));
 			playerPanel.setBounds(GridPanel.CELL_WIDTH * player.getPosition().getPosX(),
 					GridPanel.CELL_WIDTH * player.getPosition().getPosY(), 30, 30);
 			playerPanel.setSize(30, 30);
@@ -935,6 +942,13 @@ public class GamePanel extends JPanel
 			playersLayeredPane.setVisible(true);
 		}
 		playersLayeredPane.repaint();
+	}
+
+	private Boolean thisPlayersTurn(PlayerReduced player)
+	{
+		return actualState != null && actualState.getActivePlayer() != null
+				&& actualState.getActivePlayer().getUsername() != null
+				&& actualState.getActivePlayer().getUsername().equals(player.getUsername()) ? true : false;
 	}
 
 	private void drawScores()
