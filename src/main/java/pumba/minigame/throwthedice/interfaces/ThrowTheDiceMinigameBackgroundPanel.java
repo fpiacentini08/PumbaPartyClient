@@ -6,11 +6,12 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import pumba.ClientMain;
 
 public class ThrowTheDiceMinigameBackgroundPanel extends JPanel
 {
@@ -26,7 +27,7 @@ public class ThrowTheDiceMinigameBackgroundPanel extends JPanel
 	{
 		try
 		{
-			return ImageIO.read(new File("src/resources/img/Background1.jpg"));
+			return ImageIO.read(ClientMain.class.getResource("/Background1.jpg"));
 		}
 		catch (IOException e)
 		{

@@ -2,29 +2,18 @@ package pumba.messages;
 
 import java.util.List;
 
-import pumba.connector.Connector;
-import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.players.PlayerReduced;
 
 public class GetPlayersMessage extends SocketMessage
 {
 	private List<PlayerReduced> players;
+	private String clientId;
 
 	public GetPlayersMessage()
 	{
 		super();
-	}
-
-	@Override
-	public void processResponse(Object object) throws PumbaException
-	{
-		Connector connector = (Connector) object;
-
-		if (!connector.getMessage().getApproved())
-		{
-			this.setErrorMessage(connector.getMessage().getErrorMessage());
-		}
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	public List<PlayerReduced> getPlayers()
@@ -37,5 +26,4 @@ public class GetPlayersMessage extends SocketMessage
 		this.players = players;
 	}
 
-	
 }

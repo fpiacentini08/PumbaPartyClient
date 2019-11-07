@@ -4,7 +4,7 @@ public class ThrowTheDiceMinigameStateReduced
 {
 	private Integer activeTurn;
 	private String activePlayer;
-	private Integer activeStep;
+	private ThrowTheDiceMinigameStateEnum activeStep;
 
 	public ThrowTheDiceMinigameStateReduced()
 	{
@@ -31,12 +31,12 @@ public class ThrowTheDiceMinigameStateReduced
 		this.activePlayer = activePlayer;
 	}
 
-	public Integer getActiveStep()
+	public ThrowTheDiceMinigameStateEnum getActiveStep()
 	{
 		return activeStep;
 	}
 
-	public void setActiveStep(Integer activeStep)
+	public void setActiveStep(ThrowTheDiceMinigameStateEnum activeStep)
 	{
 		this.activeStep = activeStep;
 	}

@@ -6,12 +6,13 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import pumba.ClientMain;
 
 public class ThrowDicePanel extends JPanel
 {
@@ -23,7 +24,7 @@ public class ThrowDicePanel extends JPanel
 	public static final Integer DICE_SIZE = 50;
 	public static final Integer DICE_POS_X = 650;
 	public static final Integer DICE_POS_Y = 180;
-	
+
 	private static Integer DICE_WIDTH = 360 / 6;
 	protected static Integer diceNumber;
 
@@ -33,7 +34,7 @@ public class ThrowDicePanel extends JPanel
 	{
 		try
 		{
-			return ImageIO.read(new File("src/resources/img/DiceSprites.jpg"));
+			return ImageIO.read(ClientMain.class.getResource("/DiceSprites.jpg"));
 		}
 		catch (IOException e)
 		{
@@ -48,7 +49,6 @@ public class ThrowDicePanel extends JPanel
 		diceNumber = rand.nextInt(6);
 		setVisible(true);
 		setLayout(null);
-
 
 	}
 
@@ -70,7 +70,7 @@ public class ThrowDicePanel extends JPanel
 
 	private BufferedImage getDice(BufferedImage dice)
 	{
-		DICE_WIDTH = dice.getWidth()/6;
+		DICE_WIDTH = dice.getWidth() / 6;
 		return dice.getSubimage(diceNumber * DICE_WIDTH, diceNumber * DICE_WIDTH, DICE_WIDTH, DICE_WIDTH);
 	}
 

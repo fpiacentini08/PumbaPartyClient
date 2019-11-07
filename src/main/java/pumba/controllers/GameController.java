@@ -1,6 +1,5 @@
 package pumba.controllers;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.messages.ApplyCellEffectMessage;
 import pumba.messages.FinishRoundMessage;
@@ -15,94 +14,95 @@ import pumba.messages.StartTestGameMessage;
 import pumba.messages.ThrowDiceMessage;
 import pumba.messages.utils.SocketMessage;
 import pumba.models.board.cells.PositionReduced;
+import pumba.sockets.PumbaSocket;
 
 public class GameController
 {
 
-	public void startTestGame(Connector connector)
-			throws PumbaException
+	public void startTestGame(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new StartTestGameMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 	}
 
-	public void getPlayers(Connector connector)
+	public void getPlayers(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new GetPlayersMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void nextStep(Connector connector)
+	public void nextStep(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new NextStepMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void throwDice(Connector connector)
+	public void throwDice(PumbaSocket socket) throws PumbaException
 	{
 		SocketMessage message = new ThrowDiceMessage();
-		connector.setMessage(message);
-		connector.run();
+		socket.setMessage(message);
+		socket.run();
 	}
 
-	public void getPossiblePositions(Connector connector)
+	public void getPossiblePositions(PumbaSocket socket)
 	{
 		SocketMessage message = new GetPossiblePositionsMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void move(Connector connector, PositionReduced positionReduced)
+	public void move(PumbaSocket socket, PositionReduced positionReduced)
 	{
 		SocketMessage message = new MoveMessage(positionReduced);
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void applyCellEffect(Connector connector)
+	public void applyCellEffect(PumbaSocket socket)
 	{
 		SocketMessage message = new ApplyCellEffectMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void getActivePlayerActions(Connector connector)
+	public void getActivePlayerActions(PumbaSocket socket)
 	{
 		SocketMessage message = new GetActivePlayerActionsMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void playAction(Connector connector, String actionDescription)
+	public void playAction(PumbaSocket socket, String actionDescription)
 	{
 		SocketMessage message = new PlayActionMessage(actionDescription);
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void finishTurn(Connector connector)
+	public void finishTurn(PumbaSocket socket)
 	{
 		SocketMessage message = new FinishTurnMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
 
-	public void finishRound(Connector connector)
+	public void finishRound(PumbaSocket socket)
 	{
 		SocketMessage message = new FinishRoundMessage();
-		connector.setMessage(message);
-		connector.run();
-		
+		socket.setMessage(message);
+		socket.run();
+
 	}
+
 }

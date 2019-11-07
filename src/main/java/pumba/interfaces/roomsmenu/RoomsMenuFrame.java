@@ -4,9 +4,9 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
-import pumba.connector.Connector;
 import pumba.exceptions.PumbaException;
 import pumba.models.users.User;
+import pumba.sockets.Connector;
 
 public class RoomsMenuFrame extends JFrame
 {

@@ -1,7 +1,5 @@
 package pumba.messages;
 
-import pumba.connector.Connector;
-import pumba.exceptions.PumbaException;
 import pumba.messages.utils.SocketMessage;
 import pumba.minigame.throwthedice.models.ThrowTheDiceMinigameResult;
 
@@ -9,20 +7,12 @@ public class ThrowTheDiceMinigameThrowDiceMessage extends SocketMessage
 {
 	private ThrowTheDiceMinigameResult result;
 
+	private String clientId;
+	
 	public ThrowTheDiceMinigameThrowDiceMessage()
 	{
 		super();
-	}
-
-	@Override
-	public void processResponse(Object object) throws PumbaException
-	{
-		Connector connector = (Connector) object;
-
-		if (!connector.getMessage().getApproved())
-		{
-			this.setErrorMessage(connector.getMessage().getErrorMessage());
-		}
+		this.clientId = SocketMessage.getClientId();
 	}
 
 	public ThrowTheDiceMinigameResult getResult()
